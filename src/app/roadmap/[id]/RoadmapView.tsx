@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Roadmap } from '@/data/roadmap';
+import { enrollInRoadmap } from '@/app/actions/enrollment';
 
 export default function RoadmapView({ category }: { category: Roadmap }) {
   const [completedNodes, setCompletedNodes] = useState<Record<string, boolean>>({});
@@ -101,9 +102,11 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
                   Enrolled: {formatDate(new Date(enrollmentDate))} <br/> [ Resume ]
                 </Link>
               ) : (
-                <Link href={`/roadmap/${category.id}/learn`} className="border border-accent text-accent hover:bg-accent hover:text-bg-main px-4 py-3 text-[11px] font-mono tracking-wider uppercase transition-colors text-center block leading-[2.5]">
-                  Start Course
-                </Link>
+                <form action={enrollInRoadmap.bind(null, category.id)}>
+                  <button type="submit" className="w-full border border-accent text-accent hover:bg-accent hover:text-bg-main px-4 py-3 text-[11px] font-mono tracking-wider uppercase transition-colors text-center block leading-[2.5]">
+                    Start Course
+                  </button>
+                </form>
               )}
               <button className="border border-border-main text-text-secondary hover:border-text-muted hover:text-text-primary px-4 py-3 text-[11px] font-mono tracking-wider uppercase transition-colors">
                 View Paths

@@ -1,12 +1,10 @@
 import Link from 'next/link';
 import { platformCategories } from '@/data/roadmap';
 import { Search, ChevronRight, LayoutGrid } from 'lucide-react';
-import Navbar from '@/components/Navbar';
 
 export default function RoadmapsIndexPage() {
   return (
     <div className="min-h-screen bg-bg-main flex flex-col">
-      <Navbar />
       
       <main className="flex-grow w-full max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 py-12">
         <div className="mb-12">
