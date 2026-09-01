@@ -12,7 +12,7 @@ export default function Home() {
     <div className="w-full relative min-h-screen pb-12">
       
       {/* 1. HERO SECTION */}
-      <section className="max-w-[1200px] mx-auto px-6 pt-24 pb-32">
+      <section className="w-full px-6 md:px-12 lg:px-24 xl:px-32 pt-24 pb-32">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           
           {/* Hero Left */}
@@ -99,7 +99,7 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="max-w-[1200px] mx-auto px-6 flex flex-col gap-8">
+      <div className="w-full px-6 md:px-12 lg:px-24 xl:px-32 flex flex-col gap-8">
         
         {/* 2. AVAILABLE CATEGORIES */}
         <section className="border border-border-main p-8 bg-bg-sec rounded-sm">
@@ -246,7 +246,7 @@ export default function Home() {
       </div>
 
       {/* FOOTER */}
-      <footer className="max-w-[1200px] mx-auto px-6 mt-20 flex flex-col items-center gap-8">
+      <footer className="w-full px-6 md:px-12 lg:px-24 xl:px-32 mt-20 flex flex-col items-center gap-8">
         <div className="flex flex-wrap justify-center gap-12">
           <Link href="#" className="flex items-center gap-2 font-mono text-[12px] text-text-muted hover:text-text-primary transition-colors">
             <Star size={18} /> GitHub Stars
