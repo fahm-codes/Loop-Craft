@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Search, Moon, Sun } from 'lucide-react';
+import { Search, Moon, Sun, Github, MessageSquare, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
@@ -9,7 +9,6 @@ export default function Navbar() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
   useEffect(() => {
-    // Check initial system preference or saved preference
     const isLight = window.matchMedia('(prefers-color-scheme: light)').matches;
     if (isLight) setTheme('light');
   }, []);
@@ -27,11 +26,11 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="border-b border-border-main bg-bg-main text-text-secondary font-mono text-[12px] uppercase h-16 flex items-center">
-      <div className="w-full px-6 flex justify-between items-center">
+    <nav className="border-b border-border-main bg-bg-main text-text-secondary h-16 flex items-center px-6 lg:px-12">
+      <div className="w-full flex justify-between items-center">
         
         {/* Left: Branding */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center">
           <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
             <Image 
               src="/logo.png" 
@@ -45,29 +44,26 @@ export default function Navbar() {
         </div>
 
         {/* Middle: Links */}
-        <div className="hidden md:flex items-center gap-8 font-medium">
-          <Link href="/" className="text-accent border-b border-accent py-[18px]">ROADMAPS</Link>
-          <Link href="#" className="hover:text-text-primary transition-colors py-[18px]">RESOURCES</Link>
-          <div className="flex items-center gap-2 group">
-            <span className="w-2 h-2 bg-error group-hover:bg-success transition-colors"></span>
-            <Link href="#" className="hover:text-text-primary transition-colors py-[18px]">SYSTEM_LOGS</Link>
-          </div>
-          <Link href="#" className="hover:text-text-primary transition-colors py-[18px]">ABOUT</Link>
+        <div className="hidden md:flex items-center gap-10 font-sans font-medium text-[15px]">
+          <Link href="/" className="text-accent border-b-2 border-accent py-[18px]">Home</Link>
+          <Link href="#" className="hover:text-text-primary transition-colors py-[18px]">Learn</Link>
+          <Link href="#" className="hover:text-text-primary transition-colors py-[18px]">Roadmaps</Link>
+          <Link href="#" className="hover:text-text-primary transition-colors py-[18px]">Community</Link>
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-3">
-          <div className="hidden lg:flex items-center gap-2 mr-4 font-mono text-[10px] text-success">
-            &bull; SYS_ONLINE
-          </div>
-          <a href="#" className="hidden lg:flex items-center gap-2 border border-border-main bg-bg-sec px-3 py-1.5 hover:bg-bg-panel hover:text-text-primary transition-colors text-text-secondary">
-            <span>[ GitHub ]</span>
-          </a>
-          <button onClick={toggleTheme} className="border border-border-main w-8 h-8 flex items-center justify-center hover:bg-bg-panel hover:text-text-primary transition-colors">
-            {theme === 'dark' ? <Sun className="w-4 h-4 text-accent" /> : <Moon className="w-4 h-4 text-accent" />}
+        <div className="flex items-center gap-6">
+          <button onClick={toggleTheme} className="hover:text-text-primary transition-colors">
+            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
           </button>
-          <button className="border border-border-main w-8 h-8 flex items-center justify-center hover:bg-bg-panel hover:text-text-primary transition-colors">
-            <Search className="w-4 h-4" />
+          <Link href="#" className="hover:text-text-primary transition-colors hidden sm:block">
+            <Github size={20} />
+          </Link>
+          <Link href="#" className="hover:text-text-primary transition-colors hidden sm:block">
+            <MessageSquare size={20} />
+          </Link>
+          <button className="border border-border-main rounded-md px-4 py-1.5 flex items-center gap-2 hover:bg-bg-panel hover:text-text-primary transition-colors text-sm font-sans font-medium">
+            Profile <ChevronDown size={14} />
           </button>
         </div>
 

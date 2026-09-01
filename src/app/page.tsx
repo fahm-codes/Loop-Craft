@@ -45,7 +45,7 @@ export default function Home() {
           </div>
 
           {/* Hero Right - Diagram */}
-          <div className="relative h-[400px] hidden lg:flex items-center justify-center font-mono text-[11px] uppercase tracking-widest text-accent">
+          <div className="relative h-[400px] hidden lg:flex items-center justify-center font-mono text-xs uppercase tracking-widest text-accent">
             {/* Center Star */}
             <div className="absolute flex flex-col items-center gap-2 z-10">
               <Star size={32} className="text-text-primary fill-text-primary" />
@@ -107,7 +107,7 @@ export default function Home() {
             <h2 className="font-mono text-[13px] tracking-widest uppercase text-accent font-bold">
               &gt; AVAILABLE CATEGORIES
             </h2>
-            <Link href="#" className="font-mono text-[11px] text-text-muted hover:text-text-primary tracking-widest flex items-center gap-1">
+            <Link href="#" className="font-mono text-xs text-text-muted hover:text-text-primary tracking-widest flex items-center gap-1">
               VIEW ALL CATEGORIES <ChevronRight size={14} />
             </Link>
           </div>
@@ -123,7 +123,7 @@ export default function Home() {
               <Link key={i} href={cat.link || "#"} className="group block border border-border-main bg-bg-main p-6 hover:border-accent transition-colors rounded-sm flex flex-col items-center text-center relative h-full">
                 <cat.icon size={32} className="text-accent mb-6" strokeWidth={1.5} />
                 <h3 className="font-sans font-bold text-text-primary text-[15px] mb-4 leading-tight">{cat.title}</h3>
-                <p className="font-mono text-[11px] text-text-secondary leading-relaxed mb-8 flex-grow">{cat.desc}</p>
+                <p className="font-mono text-xs text-text-secondary leading-relaxed mb-8 flex-grow">{cat.desc}</p>
                 <div className="absolute bottom-4 right-4 text-accent opacity-0 group-hover:opacity-100 transition-opacity">
                   <MoveRight size={16} />
                 </div>
@@ -151,7 +151,7 @@ export default function Home() {
                   <step.icon size={28} className="text-accent" strokeWidth={1.5} />
                 </div>
                 <h3 className="font-sans font-bold text-text-primary text-[14px] mb-3 uppercase tracking-wider">{step.title}</h3>
-                <p className="font-mono text-[11px] text-text-secondary leading-relaxed max-w-[160px]">{step.desc}</p>
+                <p className="font-mono text-xs text-text-secondary leading-relaxed max-w-[160px]">{step.desc}</p>
               </div>
             ))}
             
@@ -173,13 +173,13 @@ export default function Home() {
             <h2 className="font-mono text-[13px] tracking-widest uppercase text-accent font-bold mb-6">
               &gt; ROADMAP GUIDE
             </h2>
-            <p className="font-mono text-[11px] text-text-secondary leading-relaxed mb-8 max-w-sm">
+            <p className="font-mono text-xs text-text-secondary leading-relaxed mb-8 max-w-sm">
               Structured roadmaps to take you from where you are to where you want to be.
             </p>
             
             <div className="flex flex-col gap-3 relative z-10 flex-grow">
               {['University Courses', 'Role-Based Roadmaps', 'Skill-Based Roadmaps', 'Absolute Beginner', 'Best Practices'].map((item, i) => (
-                <div key={i} className="border border-border-main bg-bg-main px-4 py-3 font-mono text-[12px] text-text-primary flex justify-between items-center max-w-[280px]">
+                <div key={i} className="border border-border-main bg-bg-main px-4 py-3 font-mono text-[13px] text-text-primary flex justify-between items-center max-w-[280px]">
                   {item}
                   <ChevronRight size={14} className="text-text-muted" />
                 </div>
@@ -206,13 +206,13 @@ export default function Home() {
             <div className="flex gap-8 items-start flex-grow">
               <Bot size={64} className="text-accent shrink-0" strokeWidth={1} />
               <div className="flex flex-col items-start pt-2">
-                <p className="font-mono text-[12px] text-text-secondary leading-relaxed mb-4">
+                <p className="font-mono text-[13px] text-text-secondary leading-relaxed mb-4">
                   Not sure what to learn?
                 </p>
-                <p className="font-mono text-[12px] text-text-secondary leading-relaxed mb-8">
+                <p className="font-mono text-[13px] text-text-secondary leading-relaxed mb-8">
                   Tell us your goal, and AI will suggest the best roadmap for you.
                 </p>
-                <button className="bg-accent text-bg-main px-6 py-3 font-mono text-[12px] uppercase font-bold tracking-widest hover:opacity-90 transition-opacity flex items-center gap-2">
+                <button className="bg-accent text-bg-main px-6 py-3 font-mono text-[13px] uppercase font-bold tracking-widest hover:opacity-90 transition-opacity flex items-center gap-2">
                   BUILD MY ROADMAP <MoveRight size={16} />
                 </button>
               </div>
@@ -237,7 +237,7 @@ export default function Home() {
               <div key={i} className="border border-border-main bg-bg-main p-6 flex flex-col items-center text-center rounded-sm">
                 <feature.icon size={32} className="text-accent mb-6" strokeWidth={1.5} />
                 <h3 className="font-sans font-bold text-text-primary text-[14px] mb-3 leading-tight">{feature.title}</h3>
-                <p className="font-mono text-[11px] text-text-secondary leading-relaxed">{feature.desc}</p>
+                <p className="font-mono text-xs text-text-secondary leading-relaxed">{feature.desc}</p>
               </div>
             ))}
           </div>
@@ -248,21 +248,21 @@ export default function Home() {
       {/* FOOTER */}
       <footer className="w-full px-6 md:px-12 lg:px-24 xl:px-32 mt-20 flex flex-col items-center gap-8">
         <div className="flex flex-wrap justify-center gap-12">
-          <Link href="#" className="flex items-center gap-2 font-mono text-[12px] text-text-muted hover:text-text-primary transition-colors">
+          <Link href="#" className="flex items-center gap-2 font-mono text-[13px] text-text-muted hover:text-text-primary transition-colors">
             <Star size={18} /> GitHub Stars
           </Link>
-          <Link href="#" className="flex items-center gap-2 font-mono text-[12px] text-text-muted hover:text-text-primary transition-colors">
+          <Link href="#" className="flex items-center gap-2 font-mono text-[13px] text-text-muted hover:text-text-primary transition-colors">
             <MessageSquare size={18} /> Discord
           </Link>
-          <Link href="#" className="flex items-center gap-2 font-mono text-[12px] text-text-muted hover:text-text-primary transition-colors">
+          <Link href="#" className="flex items-center gap-2 font-mono text-[13px] text-text-muted hover:text-text-primary transition-colors">
             <Users size={18} /> Community
           </Link>
-          <Link href="#" className="flex items-center gap-2 font-mono text-[12px] text-text-muted hover:text-text-primary transition-colors">
+          <Link href="#" className="flex items-center gap-2 font-mono text-[13px] text-text-muted hover:text-text-primary transition-colors">
             <ShieldCheck size={18} /> Privacy Policy
           </Link>
         </div>
         
-        <div className="font-mono text-[11px] text-text-muted mb-4 tracking-widest">
+        <div className="font-mono text-xs text-text-muted mb-4 tracking-widest">
           &copy; LoopCraft. All rights reserved.
         </div>
       </footer>
