@@ -46,8 +46,8 @@ export default function Navbar() {
         {/* Middle: Links */}
         <div className="hidden md:flex items-center gap-10 font-sans font-medium text-[15px]">
           <Link href="/" className="text-accent border-b-2 border-accent py-[18px]">Home</Link>
-          <Link href="#" className="hover:text-text-primary transition-colors py-[18px]">Learn</Link>
-          <Link href="#" className="hover:text-text-primary transition-colors py-[18px]">Roadmaps</Link>
+          <Link href="/roadmap/ai-engineering/learn" className="hover:text-text-primary transition-colors py-[18px]">Learn</Link>
+          <Link href="/roadmaps" className="hover:text-text-primary transition-colors py-[18px]">Roadmaps</Link>
           <Link href="#" className="hover:text-text-primary transition-colors py-[18px]">Community</Link>
         </div>
 

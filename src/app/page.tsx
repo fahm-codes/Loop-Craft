@@ -35,12 +35,12 @@ export default function Home() {
             </div>
             
             <div className="flex flex-wrap gap-4 font-mono text-sm lg:text-base uppercase tracking-wider">
-              <Link href="/roadmaps/ai-engineering" className="bg-accent text-bg-main px-8 py-4 font-bold hover:opacity-90 transition-opacity flex items-center gap-2">
+              <Link href="/roadmap/ai-engineering" className="bg-accent text-bg-main px-8 py-4 font-bold hover:opacity-90 transition-opacity flex items-center gap-2">
                 START LEARNING <ChevronRight size={18} />
               </Link>
-              <button className="border border-border-main text-text-secondary px-8 py-4 hover:border-text-muted hover:text-text-primary transition-colors flex items-center gap-2">
+              <Link href="/roadmaps" className="border border-border-main text-text-secondary px-8 py-4 hover:border-text-muted hover:text-text-primary transition-colors flex items-center gap-2">
                 EXPLORE ROADMAPS <ChevronRight size={18} />
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -117,18 +117,18 @@ export default function Home() {
             <h2 className="font-mono text-sm lg:text-base tracking-widest uppercase text-accent font-bold">
               &gt; AVAILABLE CATEGORIES
             </h2>
-            <Link href="#" className="font-mono text-xs lg:text-sm text-text-muted hover:text-text-primary tracking-widest flex items-center gap-1">
+            <Link href="/roadmaps" className="font-mono text-xs lg:text-sm text-text-muted hover:text-text-primary tracking-widest flex items-center gap-1">
               VIEW ALL CATEGORIES <ChevronRight size={16} />
             </Link>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6">
             {[
-              { icon: GraduationCap, title: 'University Courses', desc: 'Structured learning paths inspired by university-level study.' },
-              { icon: Briefcase, title: 'Role-Based Roadmaps', desc: 'Roadmaps designed for specific developer roles.', link: '/roadmaps/ai-engineering' },
-              { icon: Code, title: 'Skill-Based Roadmaps', desc: 'Learn in-demand technical skills step by step.' },
-              { icon: Rocket, title: 'Absolute Beginner', desc: 'Start your coding journey from absolute zero.' },
-              { icon: Shield, title: 'Best Practices', desc: 'Essential practices every developer should know.' },
+              { icon: GraduationCap, title: 'University Courses', desc: 'Structured learning paths inspired by university-level study.', link: '#' },
+              { icon: Briefcase, title: 'Role-Based Roadmaps', desc: 'Roadmaps designed for specific developer roles.', link: '/roadmaps/role-based' },
+              { icon: Code, title: 'Skill-Based Roadmaps', desc: 'Learn in-demand technical skills step by step.', link: '/roadmaps/skill-based' },
+              { icon: Rocket, title: 'Absolute Beginner', desc: 'Start your coding journey from absolute zero.', link: '/roadmaps/absolute-beginner' },
+              { icon: Shield, title: 'Best Practices', desc: 'Essential practices every developer should know.', link: '/roadmaps/best-practices' },
             ].map((cat, i) => (
               <Link key={i} href={cat.link || "#"} className="group block border border-border-main bg-bg-main p-8 hover:border-accent transition-colors rounded-md flex flex-col items-center text-center relative h-full">
                 <cat.icon size={36} className="text-accent mb-6" strokeWidth={1.5} />
@@ -222,9 +222,9 @@ export default function Home() {
                 <p className="font-mono text-sm lg:text-base text-text-secondary leading-relaxed mb-10 max-w-md">
                   Tell us your goal, and AI will suggest the best roadmap for you.
                 </p>
-                <button className="bg-accent text-bg-main px-8 py-4 font-mono text-sm uppercase font-bold tracking-widest hover:opacity-90 transition-opacity flex items-center gap-3">
+                <Link href="/roadmaps" className="bg-accent text-bg-main px-8 py-4 font-mono text-sm uppercase font-bold tracking-widest hover:opacity-90 transition-opacity flex items-center gap-3">
                   BUILD MY ROADMAP <MoveRight size={18} />
-                </button>
+                </Link>
               </div>
             </div>
           </section>
@@ -258,16 +258,16 @@ export default function Home() {
       {/* FOOTER */}
       <footer className="w-full px-6 mt-24 mb-10 flex flex-col items-center gap-8">
         <div className="flex flex-wrap justify-center gap-12">
-          <Link href="#" className="flex items-center gap-2 font-mono text-sm text-text-muted hover:text-text-primary transition-colors">
+          <Link href="/roadmaps" className="flex items-center gap-2 font-mono text-sm text-text-muted hover:text-text-primary transition-colors">
             <Star size={20} /> GitHub Stars
           </Link>
-          <Link href="#" className="flex items-center gap-2 font-mono text-sm text-text-muted hover:text-text-primary transition-colors">
+          <Link href="/roadmaps" className="flex items-center gap-2 font-mono text-sm text-text-muted hover:text-text-primary transition-colors">
             <MessageSquare size={20} /> Discord
           </Link>
-          <Link href="#" className="flex items-center gap-2 font-mono text-sm text-text-muted hover:text-text-primary transition-colors">
+          <Link href="/roadmaps" className="flex items-center gap-2 font-mono text-sm text-text-muted hover:text-text-primary transition-colors">
             <Users size={20} /> Community
           </Link>
-          <Link href="#" className="flex items-center gap-2 font-mono text-sm text-text-muted hover:text-text-primary transition-colors">
+          <Link href="/roadmaps" className="flex items-center gap-2 font-mono text-sm text-text-muted hover:text-text-primary transition-colors">
             <ShieldCheck size={20} /> Privacy Policy
           </Link>
         </div>

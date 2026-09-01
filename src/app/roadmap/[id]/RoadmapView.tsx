@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { RoadmapCategory } from '@/data/roadmap';
+import { Roadmap } from '@/data/roadmap';
 
-export default function RoadmapView({ category }: { category: RoadmapCategory }) {
+export default function RoadmapView({ category }: { category: Roadmap }) {
   const [completedNodes, setCompletedNodes] = useState<Record<string, boolean>>({});
   const [expandedNode, setExpandedNode] = useState<string | null>(null);
   const [enrollmentDate, setEnrollmentDate] = useState<string | null>(null);
@@ -97,11 +97,11 @@ export default function RoadmapView({ category }: { category: RoadmapCategory })
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-8">
               {enrollmentDate ? (
-                <Link href={`/roadmaps/${category.id}/learn`} className="border border-success text-success bg-[#22c55e10] px-4 py-3 text-[10px] font-mono tracking-widest uppercase text-center hover:bg-success hover:text-bg-main transition-colors block">
+                <Link href={`/roadmap/${category.id}/learn`} className="border border-success text-success bg-[#22c55e10] px-4 py-3 text-[10px] font-mono tracking-widest uppercase text-center hover:bg-success hover:text-bg-main transition-colors block">
                   Enrolled: {formatDate(new Date(enrollmentDate))} <br/> [ Resume ]
                 </Link>
               ) : (
-                <Link href={`/roadmaps/${category.id}/learn`} className="border border-accent text-accent hover:bg-accent hover:text-bg-main px-4 py-3 text-[11px] font-mono tracking-wider uppercase transition-colors text-center block leading-[2.5]">
+                <Link href={`/roadmap/${category.id}/learn`} className="border border-accent text-accent hover:bg-accent hover:text-bg-main px-4 py-3 text-[11px] font-mono tracking-wider uppercase transition-colors text-center block leading-[2.5]">
                   Start Course
                 </Link>
               )}

@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { RoadmapCategory } from '@/data/roadmap';
+import { Roadmap } from '@/data/roadmap';
 import Link from 'next/link';
 
-export default function LearnView({ category }: { category: RoadmapCategory }) {
+export default function LearnView({ category }: { category: Roadmap }) {
   const [activeNodeId, setActiveNodeId] = useState<string>(category.nodes[0]?.id || '');
   const [enrollmentDate, setEnrollmentDate] = useState<string | null>(null);
 
@@ -68,7 +68,7 @@ export default function LearnView({ category }: { category: RoadmapCategory }) {
       {/* SIDEBAR: Table of Contents */}
       <aside className="w-full md:w-80 border-r border-border-main bg-bg-sec shrink-0 flex flex-col h-[calc(100vh-64px)] md:sticky md:top-16 overflow-y-auto">
         <div className="p-6 border-b border-border-main">
-          <Link href={`/roadmaps/${category.id}`} className="text-text-muted hover:text-text-primary text-[11px] font-mono tracking-widest uppercase mb-4 block">
+          <Link href={`/roadmap/${category.id}`} className="text-text-muted hover:text-text-primary text-[11px] font-mono tracking-widest uppercase mb-4 block">
             &larr; Back to Overview
           </Link>
           <h2 className="text-xl font-sans font-bold text-text-primary uppercase leading-tight">
