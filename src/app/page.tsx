@@ -12,7 +12,7 @@ export default function Home() {
     <div className="w-full relative min-h-screen pb-12 bg-bg-main">
       
       {/* 1. HERO SECTION */}
-      <section className="max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 pt-20 pb-32">
+      <section className="w-full px-6 md:px-12 lg:px-16 pt-20 pb-32">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           
           {/* Hero Left */}
@@ -47,34 +47,34 @@ export default function Home() {
           {/* Hero Right - Diagram */}
           <div className="relative h-[450px] hidden lg:flex items-center justify-center font-mono text-sm uppercase tracking-widest text-accent">
             {/* Center Star */}
-            <div className="absolute flex flex-col items-center gap-2 z-10">
+            <div className="absolute flex flex-col items-center gap-2 z-10 animate-pulse-glow cursor-pointer">
               <Star size={40} className="text-text-primary fill-text-primary" />
               <span className="text-text-primary font-bold">MASTER</span>
             </div>
             
             {/* Nodes */}
-            <div className="absolute top-0 flex flex-col items-center gap-3">
+            <div className="absolute top-0 flex flex-col items-center gap-3 hover:scale-110 transition-transform cursor-pointer animate-float" style={{animationDelay: '0s'}}>
               <span className="text-accent font-bold">LEARN</span>
               <div className="border-2 border-accent rounded-md p-5 bg-bg-main shadow-[0_0_15px_rgba(99,133,240,0.15)]">
                 <BookOpen size={28} className="text-accent" />
               </div>
             </div>
 
-            <div className="absolute right-0 flex flex-col items-center gap-3">
+            <div className="absolute right-0 flex flex-col items-center gap-3 hover:scale-110 transition-transform cursor-pointer animate-float" style={{animationDelay: '1s'}}>
               <span className="text-accent font-bold">PRACTICE</span>
               <div className="border-2 border-accent rounded-md p-5 bg-bg-main shadow-[0_0_15px_rgba(99,133,240,0.15)]">
                 <Code2 size={28} className="text-accent" />
               </div>
             </div>
 
-            <div className="absolute bottom-0 flex flex-col items-center gap-3">
+            <div className="absolute bottom-0 flex flex-col items-center gap-3 hover:scale-110 transition-transform cursor-pointer animate-float" style={{animationDelay: '2s'}}>
               <span className="text-accent font-bold">REVIEW</span>
               <div className="border-2 border-accent rounded-md p-5 bg-bg-main shadow-[0_0_15px_rgba(99,133,240,0.15)]">
                 <FileText size={28} className="text-accent" />
               </div>
             </div>
 
-            <div className="absolute left-0 flex flex-col items-center gap-3">
+            <div className="absolute left-0 flex flex-col items-center gap-3 hover:scale-110 transition-transform cursor-pointer animate-float" style={{animationDelay: '3s'}}>
               <span className="text-accent font-bold">REPEAT</span>
               <div className="border-2 border-accent rounded-md p-5 bg-bg-main shadow-[0_0_15px_rgba(99,133,240,0.15)]">
                 <Repeat size={28} className="text-accent" />
@@ -83,7 +83,7 @@ export default function Home() {
 
             {/* Connecting dashed lines SVG */}
             <svg className="absolute w-full h-full -z-10" viewBox="0 0 450 450" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="225" cy="225" r="160" stroke="#292929" strokeWidth="2" strokeDasharray="8 8" />
+              <circle cx="225" cy="225" r="160" stroke="#292929" strokeWidth="2" strokeDasharray="8 8" className="animate-spin-slow origin-center" />
               {/* Approximated arrow heads */}
               <path d="M 338 112 L 325 112 L 332 124" stroke="#4A4A4A" strokeWidth="2" fill="none"/>
               <path d="M 338 338 L 351 338 L 344 326" stroke="#4A4A4A" strokeWidth="2" fill="none"/>
@@ -94,7 +94,7 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 flex flex-col gap-10">
+      <div className="w-full px-6 md:px-12 lg:px-16 flex flex-col gap-10">
         
         {/* 2. AVAILABLE CATEGORIES */}
         <section className="border border-border-main p-8 lg:p-12 bg-bg-sec rounded-md">
