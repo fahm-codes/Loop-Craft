@@ -4,115 +4,110 @@ import {
   GraduationCap, Briefcase, Code, Rocket, Shield,
   MoveRight, Bot, Layers, TerminalSquare, BarChart3, 
   Users, Award, MessageSquare, ShieldCheck,
-  ChevronRight, Play
+  ChevronRight
 } from 'lucide-react';
 
 export default function Home() {
   return (
-    <div className="w-full relative min-h-screen pb-12">
+    <div className="w-full relative min-h-screen pb-12 bg-bg-main">
       
       {/* 1. HERO SECTION */}
-      <section className="w-full px-6 md:px-12 lg:px-24 xl:px-32 pt-24 pb-32">
+      <section className="max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 pt-20 pb-32">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           
           {/* Hero Left */}
           <div>
-            <div className="font-mono text-success text-[13px] mb-8">
+            <div className="font-mono text-success text-sm lg:text-base mb-8">
               &gt; ./loopcraft --start
             </div>
             
-            <h1 className="text-6xl md:text-7xl font-sans font-bold text-text-primary mb-6 tracking-tight leading-[1.1]">
+            <h1 className="text-6xl md:text-[5rem] lg:text-[5.5rem] font-sans font-bold text-text-primary mb-6 tracking-tight leading-[1.05]">
               Learn Better.<br />
               Build Faster.
             </h1>
             
-            <p className="text-lg md:text-xl text-text-secondary font-mono mb-6">
+            <p className="text-xl lg:text-2xl text-text-secondary font-mono mb-8">
               Self-study platform for developers.
             </p>
             
-            <div className="font-mono text-accent text-[13px] mb-12 tracking-wide">
+            <div className="font-mono text-accent text-sm lg:text-base mb-12 tracking-wide">
               Learn &rarr; Practice &rarr; Review &rarr; Repeat &rarr; Master
             </div>
             
-            <div className="flex flex-wrap gap-4 font-mono text-[13px] uppercase tracking-wider">
+            <div className="flex flex-wrap gap-4 font-mono text-sm lg:text-base uppercase tracking-wider">
               <Link href="/roadmaps/ai-engineering" className="bg-accent text-bg-main px-8 py-4 font-bold hover:opacity-90 transition-opacity flex items-center gap-2">
-                START LEARNING <ChevronRight size={16} />
+                START LEARNING <ChevronRight size={18} />
               </Link>
               <button className="border border-border-main text-text-secondary px-8 py-4 hover:border-text-muted hover:text-text-primary transition-colors flex items-center gap-2">
-                EXPLORE ROADMAPS <ChevronRight size={16} />
+                EXPLORE ROADMAPS <ChevronRight size={18} />
               </button>
             </div>
           </div>
 
           {/* Hero Right - Diagram */}
-          <div className="relative h-[400px] hidden lg:flex items-center justify-center font-mono text-xs uppercase tracking-widest text-accent">
+          <div className="relative h-[450px] hidden lg:flex items-center justify-center font-mono text-sm uppercase tracking-widest text-accent">
             {/* Center Star */}
             <div className="absolute flex flex-col items-center gap-2 z-10">
-              <Star size={32} className="text-text-primary fill-text-primary" />
-              <span className="text-text-primary">MASTER</span>
+              <Star size={40} className="text-text-primary fill-text-primary" />
+              <span className="text-text-primary font-bold">MASTER</span>
             </div>
             
             {/* Nodes */}
             <div className="absolute top-0 flex flex-col items-center gap-3">
-              <span className="text-accent">LEARN</span>
-              <div className="border border-accent rounded-sm p-4 bg-bg-main">
-                <BookOpen size={24} className="text-accent" />
+              <span className="text-accent font-bold">LEARN</span>
+              <div className="border-2 border-accent rounded-md p-5 bg-bg-main shadow-[0_0_15px_rgba(99,133,240,0.15)]">
+                <BookOpen size={28} className="text-accent" />
               </div>
             </div>
 
             <div className="absolute right-0 flex flex-col items-center gap-3">
-              <span className="text-accent">PRACTICE</span>
-              <div className="border border-accent rounded-sm p-4 bg-bg-main">
-                <Code2 size={24} className="text-accent" />
+              <span className="text-accent font-bold">PRACTICE</span>
+              <div className="border-2 border-accent rounded-md p-5 bg-bg-main shadow-[0_0_15px_rgba(99,133,240,0.15)]">
+                <Code2 size={28} className="text-accent" />
               </div>
             </div>
 
             <div className="absolute bottom-0 flex flex-col items-center gap-3">
-              <span className="text-accent">REVIEW</span>
-              <div className="border border-accent rounded-sm p-4 bg-bg-main">
-                <FileText size={24} className="text-accent" />
+              <span className="text-accent font-bold">REVIEW</span>
+              <div className="border-2 border-accent rounded-md p-5 bg-bg-main shadow-[0_0_15px_rgba(99,133,240,0.15)]">
+                <FileText size={28} className="text-accent" />
               </div>
             </div>
 
             <div className="absolute left-0 flex flex-col items-center gap-3">
-              <span className="text-accent">REPEAT</span>
-              <div className="border border-accent rounded-sm p-4 bg-bg-main">
-                <Repeat size={24} className="text-accent" />
+              <span className="text-accent font-bold">REPEAT</span>
+              <div className="border-2 border-accent rounded-md p-5 bg-bg-main shadow-[0_0_15px_rgba(99,133,240,0.15)]">
+                <Repeat size={28} className="text-accent" />
               </div>
             </div>
 
             {/* Connecting dashed lines SVG */}
-            <svg className="absolute w-full h-full -z-10" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="200" cy="200" r="140" stroke="#292929" strokeWidth="1.5" strokeDasharray="6 6" />
-              {/* Arrow heads can be approximated or left as dashed circle for simplicity */}
-              {/* Top right arrow */}
-              <path d="M 299 101 L 290 100 L 295 108" stroke="#4A4A4A" strokeWidth="1.5" fill="none"/>
-              {/* Bottom right arrow */}
-              <path d="M 299 299 L 308 290 L 300 285" stroke="#4A4A4A" strokeWidth="1.5" fill="none"/>
-              {/* Bottom left arrow */}
-              <path d="M 101 299 L 110 300 L 105 292" stroke="#4A4A4A" strokeWidth="1.5" fill="none"/>
-              {/* Top left arrow */}
-              <path d="M 101 101 L 92 110 L 100 115" stroke="#4A4A4A" strokeWidth="1.5" fill="none"/>
+            <svg className="absolute w-full h-full -z-10" viewBox="0 0 450 450" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="225" cy="225" r="160" stroke="#292929" strokeWidth="2" strokeDasharray="8 8" />
+              {/* Approximated arrow heads */}
+              <path d="M 338 112 L 325 112 L 332 124" stroke="#4A4A4A" strokeWidth="2" fill="none"/>
+              <path d="M 338 338 L 351 338 L 344 326" stroke="#4A4A4A" strokeWidth="2" fill="none"/>
+              <path d="M 112 338 L 125 338 L 118 326" stroke="#4A4A4A" strokeWidth="2" fill="none"/>
+              <path d="M 112 112 L 99 112 L 106 124" stroke="#4A4A4A" strokeWidth="2" fill="none"/>
             </svg>
           </div>
-
         </div>
       </section>
 
-      <div className="w-full px-6 md:px-12 lg:px-24 xl:px-32 flex flex-col gap-8">
+      <div className="max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 flex flex-col gap-10">
         
         {/* 2. AVAILABLE CATEGORIES */}
-        <section className="border border-border-main p-8 bg-bg-sec rounded-sm">
+        <section className="border border-border-main p-8 lg:p-12 bg-bg-sec rounded-md">
           <div className="flex justify-between items-center mb-10">
-            <h2 className="font-mono text-[13px] tracking-widest uppercase text-accent font-bold">
+            <h2 className="font-mono text-sm lg:text-base tracking-widest uppercase text-accent font-bold">
               &gt; AVAILABLE CATEGORIES
             </h2>
-            <Link href="#" className="font-mono text-xs text-text-muted hover:text-text-primary tracking-widest flex items-center gap-1">
-              VIEW ALL CATEGORIES <ChevronRight size={14} />
+            <Link href="#" className="font-mono text-xs lg:text-sm text-text-muted hover:text-text-primary tracking-widest flex items-center gap-1">
+              VIEW ALL CATEGORIES <ChevronRight size={16} />
             </Link>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6">
             {[
               { icon: GraduationCap, title: 'University Courses', desc: 'Structured learning paths inspired by university-level study.' },
               { icon: Briefcase, title: 'Role-Based Roadmaps', desc: 'Roadmaps designed for specific developer roles.', link: '/roadmaps/ai-engineering' },
@@ -120,12 +115,12 @@ export default function Home() {
               { icon: Rocket, title: 'Absolute Beginner', desc: 'Start your coding journey from absolute zero.' },
               { icon: Shield, title: 'Best Practices', desc: 'Essential practices every developer should know.' },
             ].map((cat, i) => (
-              <Link key={i} href={cat.link || "#"} className="group block border border-border-main bg-bg-main p-6 hover:border-accent transition-colors rounded-sm flex flex-col items-center text-center relative h-full">
-                <cat.icon size={32} className="text-accent mb-6" strokeWidth={1.5} />
-                <h3 className="font-sans font-bold text-text-primary text-[15px] mb-4 leading-tight">{cat.title}</h3>
-                <p className="font-mono text-xs text-text-secondary leading-relaxed mb-8 flex-grow">{cat.desc}</p>
-                <div className="absolute bottom-4 right-4 text-accent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <MoveRight size={16} />
+              <Link key={i} href={cat.link || "#"} className="group block border border-border-main bg-bg-main p-8 hover:border-accent transition-colors rounded-md flex flex-col items-center text-center relative h-full">
+                <cat.icon size={36} className="text-accent mb-6" strokeWidth={1.5} />
+                <h3 className="font-sans font-bold text-text-primary text-lg mb-4 leading-tight">{cat.title}</h3>
+                <p className="font-mono text-sm text-text-secondary leading-relaxed mb-8 flex-grow">{cat.desc}</p>
+                <div className="absolute bottom-6 right-6 text-accent opacity-0 group-hover:opacity-100 transition-opacity">
+                  <MoveRight size={20} />
                 </div>
               </Link>
             ))}
@@ -133,12 +128,12 @@ export default function Home() {
         </section>
 
         {/* 3. WHY LOOPCRAFT */}
-        <section className="border border-border-main p-8 bg-bg-sec rounded-sm">
-          <h2 className="font-mono text-[13px] tracking-widest uppercase text-accent font-bold mb-12">
+        <section className="border border-border-main p-8 lg:p-12 bg-bg-sec rounded-md">
+          <h2 className="font-mono text-sm lg:text-base tracking-widest uppercase text-accent font-bold mb-14">
             &gt; WHY LOOPCRAFT?
           </h2>
           
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 lg:gap-4 relative">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10 lg:gap-4 relative">
             {[
               { icon: BookOpen, title: 'LEARN', desc: 'Understand concepts through structured paths.' },
               { icon: Code2, title: 'PRACTICE', desc: 'Solve problems and build real projects.' },
@@ -147,73 +142,73 @@ export default function Home() {
               { icon: Star, title: 'MASTER', desc: 'Turn consistent practice into real skill.' },
             ].map((step, i) => (
               <div key={i} className="flex-1 flex flex-col items-center text-center relative z-10 w-full">
-                <div className="border border-border-main bg-bg-main rounded-sm p-4 mb-4">
-                  <step.icon size={28} className="text-accent" strokeWidth={1.5} />
+                <div className="border border-border-main bg-bg-main rounded-md p-6 mb-6">
+                  <step.icon size={32} className="text-accent" strokeWidth={1.5} />
                 </div>
-                <h3 className="font-sans font-bold text-text-primary text-[14px] mb-3 uppercase tracking-wider">{step.title}</h3>
-                <p className="font-mono text-xs text-text-secondary leading-relaxed max-w-[160px]">{step.desc}</p>
+                <h3 className="font-sans font-bold text-text-primary text-base mb-3 uppercase tracking-wider">{step.title}</h3>
+                <p className="font-mono text-sm text-text-secondary leading-relaxed max-w-[200px]">{step.desc}</p>
               </div>
             ))}
             
             {/* Connecting Arrows for desktop */}
-            <div className="hidden lg:flex absolute top-8 left-[10%] right-[10%] justify-between z-0 px-8">
-               <MoveRight size={24} className="text-text-muted opacity-50" strokeWidth={1} />
-               <MoveRight size={24} className="text-text-muted opacity-50" strokeWidth={1} />
-               <MoveRight size={24} className="text-text-muted opacity-50" strokeWidth={1} />
-               <MoveRight size={24} className="text-text-muted opacity-50" strokeWidth={1} />
+            <div className="hidden lg:flex absolute top-12 left-[12%] right-[12%] justify-between z-0 px-10">
+               <MoveRight size={32} className="text-text-muted opacity-50" strokeWidth={1} />
+               <MoveRight size={32} className="text-text-muted opacity-50" strokeWidth={1} />
+               <MoveRight size={32} className="text-text-muted opacity-50" strokeWidth={1} />
+               <MoveRight size={32} className="text-text-muted opacity-50" strokeWidth={1} />
             </div>
           </div>
         </section>
 
         {/* 4. ROADMAP GUIDE & AI TUTOR */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
           
           {/* Roadmap Guide */}
-          <section className="border border-border-main p-8 bg-bg-sec rounded-sm relative overflow-hidden flex flex-col">
-            <h2 className="font-mono text-[13px] tracking-widest uppercase text-accent font-bold mb-6">
+          <section className="border border-border-main p-8 lg:p-12 bg-bg-sec rounded-md relative overflow-hidden flex flex-col">
+            <h2 className="font-mono text-sm lg:text-base tracking-widest uppercase text-accent font-bold mb-6">
               &gt; ROADMAP GUIDE
             </h2>
-            <p className="font-mono text-xs text-text-secondary leading-relaxed mb-8 max-w-sm">
+            <p className="font-mono text-sm text-text-secondary leading-relaxed mb-10 max-w-md">
               Structured roadmaps to take you from where you are to where you want to be.
             </p>
             
-            <div className="flex flex-col gap-3 relative z-10 flex-grow">
+            <div className="flex flex-col gap-4 relative z-10 flex-grow">
               {['University Courses', 'Role-Based Roadmaps', 'Skill-Based Roadmaps', 'Absolute Beginner', 'Best Practices'].map((item, i) => (
-                <div key={i} className="border border-border-main bg-bg-main px-4 py-3 font-mono text-[13px] text-text-primary flex justify-between items-center max-w-[280px]">
+                <div key={i} className="border border-border-main bg-bg-main px-6 py-4 font-mono text-sm lg:text-base text-text-primary flex justify-between items-center max-w-[350px]">
                   {item}
-                  <ChevronRight size={14} className="text-text-muted" />
+                  <ChevronRight size={18} className="text-text-muted" />
                 </div>
               ))}
             </div>
 
             {/* Faint Path Graphic */}
-            <div className="absolute right-0 bottom-0 w-64 h-64 opacity-20 pointer-events-none">
-              <svg viewBox="0 0 100 100" className="w-full h-full fill-none stroke-accent" strokeWidth="1" strokeDasharray="2 2">
+            <div className="absolute right-0 bottom-0 w-[400px] h-[400px] opacity-10 pointer-events-none">
+              <svg viewBox="0 0 100 100" className="w-full h-full fill-none stroke-accent" strokeWidth="0.5" strokeDasharray="1 1">
                  <path d="M 80,20 C 60,40 20,40 20,60 C 20,80 80,80 80,90" />
-                 <circle cx="80" cy="20" r="3" className="fill-bg-main" strokeDasharray="0"/>
-                 <circle cx="20" cy="60" r="3" className="fill-bg-main" strokeDasharray="0"/>
-                 <circle cx="80" cy="90" r="3" className="fill-bg-main" strokeDasharray="0"/>
+                 <circle cx="80" cy="20" r="2" className="fill-bg-main" strokeDasharray="0"/>
+                 <circle cx="20" cy="60" r="2" className="fill-bg-main" strokeDasharray="0"/>
+                 <circle cx="80" cy="90" r="2" className="fill-bg-main" strokeDasharray="0"/>
               </svg>
             </div>
           </section>
 
           {/* AI Roadmap Tutor */}
-          <section className="border border-border-main p-8 bg-bg-sec rounded-sm flex flex-col">
-            <h2 className="font-mono text-[13px] tracking-widest uppercase text-accent font-bold mb-12">
+          <section className="border border-border-main p-8 lg:p-12 bg-bg-sec rounded-md flex flex-col">
+            <h2 className="font-mono text-sm lg:text-base tracking-widest uppercase text-accent font-bold mb-12">
               &gt; AI ROADMAP TUTOR
             </h2>
             
-            <div className="flex gap-8 items-start flex-grow">
-              <Bot size={64} className="text-accent shrink-0" strokeWidth={1} />
+            <div className="flex flex-col sm:flex-row gap-8 items-start flex-grow">
+              <Bot size={80} className="text-accent shrink-0" strokeWidth={1} />
               <div className="flex flex-col items-start pt-2">
-                <p className="font-mono text-[13px] text-text-secondary leading-relaxed mb-4">
+                <p className="font-mono text-sm lg:text-base text-text-secondary leading-relaxed mb-4">
                   Not sure what to learn?
                 </p>
-                <p className="font-mono text-[13px] text-text-secondary leading-relaxed mb-8">
+                <p className="font-mono text-sm lg:text-base text-text-secondary leading-relaxed mb-10 max-w-md">
                   Tell us your goal, and AI will suggest the best roadmap for you.
                 </p>
-                <button className="bg-accent text-bg-main px-6 py-3 font-mono text-[13px] uppercase font-bold tracking-widest hover:opacity-90 transition-opacity flex items-center gap-2">
-                  BUILD MY ROADMAP <MoveRight size={16} />
+                <button className="bg-accent text-bg-main px-8 py-4 font-mono text-sm uppercase font-bold tracking-widest hover:opacity-90 transition-opacity flex items-center gap-3">
+                  BUILD MY ROADMAP <MoveRight size={18} />
                 </button>
               </div>
             </div>
@@ -221,12 +216,12 @@ export default function Home() {
         </div>
 
         {/* 5. BUILT FOR DEVELOPERS */}
-        <section className="border border-border-main p-8 bg-bg-sec rounded-sm">
-          <h2 className="font-mono text-[13px] tracking-widest uppercase text-accent font-bold mb-10">
+        <section className="border border-border-main p-8 lg:p-12 bg-bg-sec rounded-md">
+          <h2 className="font-mono text-sm lg:text-base tracking-widest uppercase text-accent font-bold mb-12">
             &gt; BUILT FOR DEVELOPERS
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-8">
             {[
               { icon: Layers, title: 'Structured Learning', desc: 'Follow step-by-step paths designed for results.' },
               { icon: TerminalSquare, title: 'Hands-on Practice', desc: 'Code, solve problems, and strengthen your skills.' },
@@ -234,10 +229,10 @@ export default function Home() {
               { icon: Users, title: 'Community Support', desc: 'Learn together and grow with other developers.' },
               { icon: Award, title: 'Certificates', desc: 'Earn certificates and showcase your achievements.' },
             ].map((feature, i) => (
-              <div key={i} className="border border-border-main bg-bg-main p-6 flex flex-col items-center text-center rounded-sm">
-                <feature.icon size={32} className="text-accent mb-6" strokeWidth={1.5} />
-                <h3 className="font-sans font-bold text-text-primary text-[14px] mb-3 leading-tight">{feature.title}</h3>
-                <p className="font-mono text-xs text-text-secondary leading-relaxed">{feature.desc}</p>
+              <div key={i} className="border border-border-main bg-bg-main p-8 flex flex-col items-center text-center rounded-md">
+                <feature.icon size={40} className="text-accent mb-6" strokeWidth={1.5} />
+                <h3 className="font-sans font-bold text-text-primary text-base lg:text-lg mb-4 leading-tight">{feature.title}</h3>
+                <p className="font-mono text-sm text-text-secondary leading-relaxed">{feature.desc}</p>
               </div>
             ))}
           </div>
@@ -246,23 +241,23 @@ export default function Home() {
       </div>
 
       {/* FOOTER */}
-      <footer className="w-full px-6 md:px-12 lg:px-24 xl:px-32 mt-20 flex flex-col items-center gap-8">
+      <footer className="w-full px-6 mt-24 mb-10 flex flex-col items-center gap-8">
         <div className="flex flex-wrap justify-center gap-12">
-          <Link href="#" className="flex items-center gap-2 font-mono text-[13px] text-text-muted hover:text-text-primary transition-colors">
-            <Star size={18} /> GitHub Stars
+          <Link href="#" className="flex items-center gap-2 font-mono text-sm text-text-muted hover:text-text-primary transition-colors">
+            <Star size={20} /> GitHub Stars
           </Link>
-          <Link href="#" className="flex items-center gap-2 font-mono text-[13px] text-text-muted hover:text-text-primary transition-colors">
-            <MessageSquare size={18} /> Discord
+          <Link href="#" className="flex items-center gap-2 font-mono text-sm text-text-muted hover:text-text-primary transition-colors">
+            <MessageSquare size={20} /> Discord
           </Link>
-          <Link href="#" className="flex items-center gap-2 font-mono text-[13px] text-text-muted hover:text-text-primary transition-colors">
-            <Users size={18} /> Community
+          <Link href="#" className="flex items-center gap-2 font-mono text-sm text-text-muted hover:text-text-primary transition-colors">
+            <Users size={20} /> Community
           </Link>
-          <Link href="#" className="flex items-center gap-2 font-mono text-[13px] text-text-muted hover:text-text-primary transition-colors">
-            <ShieldCheck size={18} /> Privacy Policy
+          <Link href="#" className="flex items-center gap-2 font-mono text-sm text-text-muted hover:text-text-primary transition-colors">
+            <ShieldCheck size={20} /> Privacy Policy
           </Link>
         </div>
         
-        <div className="font-mono text-xs text-text-muted mb-4 tracking-widest">
+        <div className="font-mono text-xs text-text-muted tracking-widest mt-4">
           &copy; LoopCraft. All rights reserved.
         </div>
       </footer>
