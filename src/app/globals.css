@@ -1,26 +1,112 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  
+  --color-bg-main: var(--app-bg-main);
+  --color-bg-sec: var(--app-bg-sec);
+  --color-bg-panel: var(--app-bg-panel);
+  --color-border-main: var(--app-border-main);
+  --color-text-primary: var(--app-text-primary);
+  --color-text-secondary: var(--app-text-secondary);
+  --color-text-muted: var(--app-text-muted);
+  --color-text-code: var(--app-text-code);
+  --color-accent: var(--app-accent);
+  --color-success: var(--app-success);
+  --color-error: var(--app-error);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Default Dark Mode */
+  --app-bg-main: #050505;
+  --app-bg-sec: #0b0b0b;
+  --app-bg-panel: #111111;
+  --app-border-main: #292929;
+  --app-text-primary: #F5F5F5;
+  --app-text-secondary: #A1A1A1;
+  --app-text-muted: #737373;
+  --app-text-code: #D4D4D4;
+  --app-accent: #6385F0;
+  --app-success: #22C55E;
+  --app-error: #FF4D4F;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+/* Light Mode Overrides */
+@media (prefers-color-scheme: light) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --app-bg-main: #FDFFF5; /* Milky White */
+    --app-bg-sec: #F2F4EB;
+    --app-bg-panel: #E8EAE1;
+    --app-border-main: #D1D3CA;
+    --app-text-primary: #111111;
+    --app-text-secondary: #4A4A4A;
+    --app-text-muted: #737373;
+    --app-text-code: #222222;
+    --app-accent: #4A6BE0;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.light-theme {
+  --app-bg-main: #FDFFF5; /* Milky White */
+  --app-bg-sec: #F2F4EB;
+  --app-bg-panel: #E8EAE1;
+  --app-border-main: #D1D3CA;
+  --app-text-primary: #111111;
+  --app-text-secondary: #4A4A4A;
+  --app-text-muted: #737373;
+  --app-text-code: #222222;
+  --app-accent: #4A6BE0;
+}
+
+.dark-theme {
+  --app-bg-main: #050505;
+  --app-bg-sec: #0b0b0b;
+  --app-bg-panel: #111111;
+  --app-border-main: #292929;
+  --app-text-primary: #F5F5F5;
+  --app-text-secondary: #A1A1A1;
+  --app-text-muted: #737373;
+  --app-text-code: #D4D4D4;
+  --app-accent: #6385F0;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-bg-main);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    margin: 0;
+  }
+}
+
+.grid-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+@media (prefers-color-scheme: light) {
+  .grid-overlay {
+    background-image: 
+      linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+  }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
 }
