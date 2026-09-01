@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Search, Moon, Sun, Github, MessageSquare, ChevronDown } from 'lucide-react';
+import { Search, Moon, Sun, MessageSquare, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
@@ -56,8 +56,8 @@ export default function Navbar() {
           <button onClick={toggleTheme} className="hover:text-text-primary transition-colors">
             {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
           </button>
-          <Link href="#" className="hover:text-text-primary transition-colors hidden sm:block">
-            <Github size={20} />
+          <Link href="#" className="hover:text-text-primary transition-colors hidden sm:block font-mono text-[13px]">
+            [ GitHub ]
           </Link>
           <Link href="#" className="hover:text-text-primary transition-colors hidden sm:block">
             <MessageSquare size={20} />
