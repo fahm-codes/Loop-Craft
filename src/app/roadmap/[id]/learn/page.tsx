@@ -15,9 +15,9 @@ export default async function LearnPage({ params }: { params: { id: string } }) 
 
 export function generateStaticParams() {
   const params: { id: string }[] = [];
-  platformCategories.forEach(cat => {
-    cat.roadmaps.forEach(r => {
-      params.push({ id: r.id! });
+  platformCategories.forEach((cat: any) => {
+    cat.roadmaps.forEach((r: any) => {
+      params.push({ id: r.id });
     });
   });
   return params;

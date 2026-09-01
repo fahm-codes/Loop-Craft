@@ -14,11 +14,10 @@ export default async function RoadmapPage({ params }: { params: { id: string } }
 }
 
 export function generateStaticParams() {
-  // We should return all roadmaps across all categories
   const params: { id: string }[] = [];
-  platformCategories.forEach(cat => {
-    cat.roadmaps.forEach(r => {
-      params.push({ id: r.id! });
+  platformCategories.forEach((cat: any) => {
+    cat.roadmaps.forEach((r: any) => {
+      params.push({ id: r.id });
     });
   });
   return params;

@@ -28,7 +28,7 @@ export default async function CategoryPage({ params }: { params: { id: string } 
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {category.roadmaps.map((roadmap) => (
+          {category.roadmaps.map((roadmap: any) => (
             <Link 
               href={`/roadmap/${roadmap.id}`} 
               key={roadmap.id}
