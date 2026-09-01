@@ -53,54 +53,56 @@ export default function Home() {
               <span className="text-text-primary font-bold">MASTER</span>
             </div>
             
-            {/* Orbiting Container */}
-            <div className="absolute w-full h-full animate-spin-slow flex items-center justify-center z-10">
+            <div className="absolute w-full h-full flex items-center justify-center z-10">
               
               {/* Nodes */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 cursor-pointer">
-                <div className="animate-spin-slow-reverse flex flex-col items-center gap-3 hover:scale-110 transition-transform">
-                  <span className="text-accent font-bold">LEARN</span>
-                  <div className="border-2 border-accent rounded-md p-5 bg-bg-main shadow-[0_0_15px_rgba(99,133,240,0.15)]">
-                    <BookOpen size={28} className="text-accent" />
-                  </div>
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 cursor-pointer z-20 animate-float" style={{animationDelay: '0s'}}>
+                <div className="border border-accent rounded-md px-8 py-5 bg-bg-main shadow-[0_0_20px_rgba(99,133,240,0.08)] flex flex-col items-center gap-4 hover:border-text-primary transition-colors">
+                  <span className="text-accent font-sans font-bold tracking-wider">LEARN</span>
+                  <BookOpen size={28} className="text-text-primary" strokeWidth={1.5} />
                 </div>
               </div>
 
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col items-center gap-3 cursor-pointer">
-                <div className="animate-spin-slow-reverse flex flex-col items-center gap-3 hover:scale-110 transition-transform">
-                  <span className="text-accent font-bold">PRACTICE</span>
-                  <div className="border-2 border-accent rounded-md p-5 bg-bg-main shadow-[0_0_15px_rgba(99,133,240,0.15)]">
-                    <Code2 size={28} className="text-accent" />
-                  </div>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer z-20 animate-float" style={{animationDelay: '1s'}}>
+                <div className="border border-accent rounded-md px-8 py-5 bg-bg-main shadow-[0_0_20px_rgba(99,133,240,0.08)] flex flex-col items-center gap-4 hover:border-text-primary transition-colors">
+                  <span className="text-accent font-sans font-bold tracking-wider">PRACTICE</span>
+                  <Code2 size={28} className="text-text-primary" strokeWidth={1.5} />
                 </div>
               </div>
 
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 cursor-pointer">
-                <div className="animate-spin-slow-reverse flex flex-col items-center gap-3 hover:scale-110 transition-transform">
-                  <span className="text-accent font-bold">REVIEW</span>
-                  <div className="border-2 border-accent rounded-md p-5 bg-bg-main shadow-[0_0_15px_rgba(99,133,240,0.15)]">
-                    <FileText size={28} className="text-accent" />
-                  </div>
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 cursor-pointer z-20 animate-float" style={{animationDelay: '2s'}}>
+                <div className="border border-accent rounded-md px-8 py-5 bg-bg-main shadow-[0_0_20px_rgba(99,133,240,0.08)] flex flex-col items-center gap-4 hover:border-text-primary transition-colors">
+                  <span className="text-accent font-sans font-bold tracking-wider">REVIEW</span>
+                  <FileText size={28} className="text-text-primary" strokeWidth={1.5} />
                 </div>
               </div>
 
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 flex flex-col items-center gap-3 cursor-pointer">
-                <div className="animate-spin-slow-reverse flex flex-col items-center gap-3 hover:scale-110 transition-transform">
-                  <span className="text-accent font-bold">REPEAT</span>
-                  <div className="border-2 border-accent rounded-md p-5 bg-bg-main shadow-[0_0_15px_rgba(99,133,240,0.15)]">
-                    <Repeat size={28} className="text-accent" />
-                  </div>
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 cursor-pointer z-20 animate-float" style={{animationDelay: '3s'}}>
+                <div className="border border-accent rounded-md px-8 py-5 bg-bg-main shadow-[0_0_20px_rgba(99,133,240,0.08)] flex flex-col items-center gap-4 hover:border-text-primary transition-colors">
+                  <span className="text-accent font-sans font-bold tracking-wider">REPEAT</span>
+                  <Repeat size={28} className="text-text-primary" strokeWidth={1.5} />
                 </div>
               </div>
 
               {/* Connecting dashed lines SVG */}
               <svg className="absolute w-full h-full -z-10" viewBox="0 0 450 450" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="225" cy="225" r="160" stroke="#292929" strokeWidth="2" strokeDasharray="8 8" />
-                {/* Approximated arrow heads */}
-                <path d="M 338 112 L 325 112 L 332 124" stroke="#4A4A4A" strokeWidth="2" fill="none"/>
-                <path d="M 338 338 L 351 338 L 344 326" stroke="#4A4A4A" strokeWidth="2" fill="none"/>
-                <path d="M 112 338 L 125 338 L 118 326" stroke="#4A4A4A" strokeWidth="2" fill="none"/>
-                <path d="M 112 112 L 99 112 L 106 124" stroke="#4A4A4A" strokeWidth="2" fill="none"/>
+                <defs>
+                  <marker id="arrowhead" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                    <path d="M 0 2 L 7 5 L 0 8" fill="none" stroke="#6385F0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </marker>
+                </defs>
+                
+                {/* 4 Arc Segments with flowing dashed stroke */}
+                <g stroke="#6385F0" strokeWidth="1.5" strokeDasharray="6 6" className="animate-flow" markerEnd="url(#arrowhead)">
+                  {/* TR */}
+                  <path d="M 276 84 A 150 150 0 0 1 366 174" />
+                  {/* BR */}
+                  <path d="M 366 276 A 150 150 0 0 1 276 366" />
+                  {/* BL */}
+                  <path d="M 174 366 A 150 150 0 0 1 84 276" />
+                  {/* TL */}
+                  <path d="M 84 174 A 150 150 0 0 1 174 84" />
+                </g>
               </svg>
             </div>
           </div>
