@@ -3,7 +3,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Roadmap, RoadmapNode, Resource } from '@/data/roadmap';
 import Link from 'next/link';
-import { CheckCircle, PlayCircle, BookOpen, FileText, Code2, MonitorPlay, ListChecks, Target, ChevronLeft, ChevronRight, Check, Menu, X } from 'lucide-react';
+import { CheckCircle, PlayCircle, BookOpen, FileText, Code2, MonitorPlay, ListChecks, Target, ChevronLeft, ChevronRight, Check, Menu, X, AlertTriangle } from 'lucide-react';
+import { generateSchedule } from '@/utils/schedule';
 
 const safeSetItem = (key: string, value: string) => {
   try {
@@ -88,34 +89,8 @@ export default function LearnView({ category }: { category: Roadmap }) {
   };
 
   const schedule = useMemo(() => {
-    const result: { start: Date; end: Date }[] = [];
-    if (enrollmentDate) {
-      let currentDate = new Date(enrollmentDate);
-      category.nodes.forEach(node => {
-        let days = 7;
-        const match = node.duration.match(/Week\s+(\d+)(?:-(\d+))?/i);
-        if (match) {
-          const startWeek = parseInt(match[1]);
-          const endWeek = match[2] ? parseInt(match[2]) : startWeek;
-          days = ((endWeek - startWeek) + 1) * 7;
-        } else {
-          const num = parseInt(node.duration) || 1;
-          if (node.duration.toLowerCase().includes('week')) days = num * 7;
-          else if (node.duration.toLowerCase().includes('month')) days = num * 30;
-          else if (node.duration.toLowerCase().includes('day')) days = num;
-        }
-        
-        const startDate = new Date(currentDate);
-        const endDate = new Date(currentDate);
-        endDate.setDate(endDate.getDate() + Math.max(1, days - 1));
-        result.push({ start: startDate, end: endDate });
-        
-        currentDate = new Date(endDate);
-        currentDate.setDate(currentDate.getDate() + 1);
-      });
-    }
-    return result;
-  }, [enrollmentDate, category.nodes]);
+    return generateSchedule(category, enrollmentDate || '', completedNodes);
+  }, [enrollmentDate, category, completedNodes]);
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -164,10 +139,12 @@ export default function LearnView({ category }: { category: Roadmap }) {
           </h2>
         </div>
 
-        <nav className="flex-1 p-4">
+          <nav className="flex-1 p-4">
           <div className="flex flex-col gap-2">
             {category.nodes.map((node, index) => {
               const isCompleted = isMounted && completedNodes[node.id];
+              const schedItem = schedule.find(s => s.node.id === node.id);
+              const isMissed = isMounted && schedItem?.status === 'MISSED';
               return (
                 <button
                   key={node.id}
@@ -188,14 +165,15 @@ export default function LearnView({ category }: { category: Roadmap }) {
                       Module {index + 1}
                     </div>
                     {isCompleted && <CheckCircle size={14} className="text-success" />}
+                    {isMissed && <AlertTriangle size={14} className="text-error" />}
                   </div>
-                  <strong className={`font-sans text-[13px] block mb-2 leading-snug ${isCompleted ? 'text-text-muted' : 'text-text-primary'}`}>
+                  <strong className={`font-sans text-[13px] block mb-2 leading-snug ${isCompleted ? 'text-text-muted' : isMissed ? 'text-error' : 'text-text-primary'}`}>
                     {node.title}
                   </strong>
                   
-                  {enrollmentDate && schedule[index] && (
-                    <div className="font-mono text-[9px] mt-2 flex items-center gap-1 text-text-muted">
-                      {formatDate(schedule[index].start)} - {formatDate(schedule[index].end)}
+                  {enrollmentDate && schedItem && (
+                    <div className={`font-mono text-[9px] mt-2 flex items-center gap-1 ${isMissed ? 'text-error font-bold' : 'text-text-muted'}`}>
+                      {formatDate(schedItem.start)} - {formatDate(schedItem.end)}
                     </div>
                   )}
                 </button>

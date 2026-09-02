@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { platformCategories, Roadmap, RoadmapNode } from '@/data/roadmap';
 import Link from 'next/link';
 import { 
   Terminal, ArrowRight, BookOpen, Clock, CheckCircle, 
-  Circle, Target, Code2, ListChecks, PlayCircle, Check
+  Circle, Target, Code2, ListChecks, PlayCircle, Check, AlertTriangle, Calendar
 } from 'lucide-react';
+import { generateSchedule, adjustScheduleToStartToday } from '@/utils/schedule';
 
 interface ActiveRoadmapState {
   roadmap: Roadmap;
@@ -20,8 +21,10 @@ export default function DashboardView() {
   const [activeRoadmap, setActiveRoadmap] = useState<ActiveRoadmapState | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  // Force re-render for schedule adjustment
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
   useEffect(() => {
-    // Scan all roadmaps to find active ones
     let latestRoadmap: ActiveRoadmapState | null = null;
     let latestEnrollmentTime = 0;
 
@@ -35,9 +38,6 @@ export default function DashboardView() {
           
           if (enrollTime > latestEnrollmentTime) {
             latestEnrollmentTime = enrollTime;
-            
-            // Full roadmap object is needed. We need to cast it since Category.roadmaps is Partial<Roadmap>
-            // but wait, we can just use getRoadmapById
             const fullRoadmap = require('@/data/roadmap').getRoadmapById(r.id);
             if (!fullRoadmap) return;
 
@@ -59,7 +59,17 @@ export default function DashboardView() {
 
     setActiveRoadmap(latestRoadmap);
     setIsLoaded(true);
-  }, []);
+  }, [refreshTrigger]);
+
+  const handleAdjustSchedule = (targetNodeId: string) => {
+    if (!activeRoadmap) return;
+    const newEnrollment = adjustScheduleToStartToday(activeRoadmap.roadmap, targetNodeId);
+    const dateStr = newEnrollment.toISOString();
+    localStorage.setItem(`loopcraft-enrollment-${activeRoadmap.roadmap.id}`, dateStr);
+    
+    // Auto-navigate to learn view
+    window.location.href = `/roadmap/${activeRoadmap.roadmap.id}/learn`;
+  };
 
   if (!isLoaded) {
     return (
@@ -89,64 +99,50 @@ export default function DashboardView() {
 
   const { roadmap, enrollmentDate, completedNodes, completedAssignments, reviewedTopics } = activeRoadmap;
 
-  // Calculate Progress
+  // Use new utility to calculate schedule
+  const schedule = generateSchedule(roadmap, enrollmentDate, completedNodes);
+
+  // Group schedule status
+  const missedTasks = schedule.filter(s => s.status === 'MISSED');
+  const upcomingTasks = schedule.filter(s => s.status === 'UPCOMING');
+  const currentTask = schedule.find(s => s.status === 'CURRENT') || (missedTasks.length > 0 ? missedTasks[0] : upcomingTasks[0]);
+  
   const totalNodes = roadmap.nodes.length;
   const completedNodesCount = Object.keys(completedNodes).filter(k => completedNodes[k]).length;
   const progressPercent = totalNodes > 0 ? Math.round((completedNodesCount / totalNodes) * 100) : 0;
-
-  // Find Current Node
-  const currentNodeIndex = roadmap.nodes.findIndex(n => !completedNodes[n.id]);
-  const currentNode = currentNodeIndex !== -1 ? roadmap.nodes[currentNodeIndex] : roadmap.nodes[roadmap.nodes.length - 1];
   const isFullyCompleted = completedNodesCount === totalNodes;
 
+  const activeFocusNode = schedule.find(s => !s.isCompleted)?.node || roadmap.nodes[roadmap.nodes.length - 1];
+
   // Current Node Analysis
-  const assignments = currentNode.resources?.filter(r => r.type === 'assignment') || [];
-  const topics = currentNode.topics || [];
-  
-  const nodeAssignmentsDone = completedAssignments[currentNode.id] || [];
-  const nodeTopicsDone = reviewedTopics[currentNode.id] || [];
+  const assignments = activeFocusNode.resources?.filter(r => r.type === 'assignment') || [];
+  const topics = activeFocusNode.topics || [];
+  const nodeAssignmentsDone = completedAssignments[activeFocusNode.id] || [];
+  const nodeTopicsDone = reviewedTopics[activeFocusNode.id] || [];
 
   const pendingAssignments = assignments.length - nodeAssignmentsDone.length;
   const pendingTopics = topics.length - nodeTopicsDone.length;
 
   let primaryAction = "Continue Lesson";
-  if (pendingAssignments > 0) primaryAction = "Complete Pending Assignment";
-  else if (pendingTopics > 0) primaryAction = "Complete Module Review";
-  else if (currentNodeIndex === 0 && nodeAssignmentsDone.length === 0 && nodeTopicsDone.length === 0) primaryAction = "Start Module";
+  let primaryActionDesc = `Dive into ${activeFocusNode.title} and explore the materials.`;
+
+  if (missedTasks.length > 0) {
+    primaryAction = "Resume & Catch Up";
+    primaryActionDesc = `You have ${missedTasks.length} missed module(s). Resume where you left off.`;
+  } else if (pendingAssignments > 0) {
+    primaryAction = "Complete Pending Assignment";
+    primaryActionDesc = `You have ${pendingAssignments} pending assignments in the current module.`;
+  } else if (pendingTopics > 0) {
+    primaryAction = "Complete Module Review";
+    primaryActionDesc = `You need to review ${pendingTopics} topics before completing this module.`;
+  } else if (completedNodesCount === 0 && nodeAssignmentsDone.length === 0 && nodeTopicsDone.length === 0) {
+    primaryAction = "Start Roadmap";
+  }
 
   if (isFullyCompleted) {
     primaryAction = "Review Roadmap";
+    primaryActionDesc = "You have completed all modules in this roadmap.";
   }
-
-  // Schedule Logic (reused from LearnView)
-  const getDaysFromDuration = (duration: string) => {
-    const match = duration.match(/Week\s+(\d+)(?:-(\d+))?/i);
-    if (match) {
-      const startWeek = parseInt(match[1]);
-      const endWeek = match[2] ? parseInt(match[2]) : startWeek;
-      return ((endWeek - startWeek) + 1) * 7;
-    }
-    const num = parseInt(duration) || 1;
-    if (duration.toLowerCase().includes('week')) return num * 7;
-    if (duration.toLowerCase().includes('month')) return num * 30;
-    if (duration.toLowerCase().includes('day')) return num;
-    return 7;
-  };
-
-  const schedule: { start: Date; end: Date }[] = [];
-  let currentDate = new Date(enrollmentDate);
-  roadmap.nodes.forEach(node => {
-    const days = getDaysFromDuration(node.duration);
-    const startDate = new Date(currentDate);
-    const endDate = new Date(currentDate);
-    endDate.setDate(endDate.getDate() + Math.max(1, days - 1));
-    schedule.push({ start: startDate, end: endDate });
-    currentDate = new Date(endDate);
-    currentDate.setDate(currentDate.getDate() + 1);
-  });
-
-  const currentNodeSchedule = currentNodeIndex !== -1 ? schedule[currentNodeIndex] : null;
-  const nextNodeSchedule = currentNodeIndex !== -1 && currentNodeIndex + 1 < schedule.length ? schedule[currentNodeIndex + 1] : null;
 
   const formatDate = (date: Date) => date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
@@ -164,7 +160,7 @@ export default function DashboardView() {
               {roadmap.title}
             </h1>
             <p className="text-text-secondary font-mono text-sm">
-              Current Focus: <span className="text-accent">{isFullyCompleted ? 'Course Completed' : currentNode.title}</span>
+              Current Focus: <span className="text-accent">{isFullyCompleted ? 'Course Completed' : activeFocusNode.title}</span>
             </p>
           </div>
           
@@ -173,9 +169,13 @@ export default function DashboardView() {
             <div className="font-mono text-[10px] uppercase tracking-widest text-text-muted mb-4">Overall Progress</div>
             <Link 
               href={`/roadmap/${roadmap.id}/learn`}
-              className="w-full md:w-auto border border-accent bg-accent text-bg-main px-8 py-3 hover:opacity-90 font-mono text-[12px] font-bold uppercase tracking-widest transition-opacity flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(99,133,240,0.3)]"
+              className={`w-full md:w-auto border px-8 py-3 hover:opacity-90 font-mono text-[12px] font-bold uppercase tracking-widest transition-opacity flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(99,133,240,0.3)] ${
+                missedTasks.length > 0 
+                ? 'border-error bg-[#ff4d4f15] text-error'
+                : 'border-accent bg-accent text-bg-main'
+              }`}
             >
-              <PlayCircle size={18} /> {isFullyCompleted ? 'Review Material' : 'Continue Learning'}
+              <PlayCircle size={18} /> {isFullyCompleted ? 'Review Material' : missedTasks.length > 0 ? 'Catch Up Now' : 'Continue Learning'}
             </Link>
           </div>
         </div>
@@ -187,24 +187,33 @@ export default function DashboardView() {
             
             {/* WHAT SHOULD I DO NEXT? */}
             {!isFullyCompleted && (
-              <section className="border border-accent bg-[#6385f005] p-6 md:p-8">
-                <div className="font-mono text-[11px] uppercase tracking-widest text-accent mb-6 flex items-center gap-2">
-                  <Target size={14} /> Primary Action
+              <section className={`border p-6 md:p-8 ${missedTasks.length > 0 ? 'border-error bg-[#ff4d4f05]' : 'border-accent bg-[#6385f005]'}`}>
+                <div className={`font-mono text-[11px] uppercase tracking-widest mb-6 flex items-center gap-2 ${missedTasks.length > 0 ? 'text-error' : 'text-accent'}`}>
+                  {missedTasks.length > 0 ? <AlertTriangle size={14} /> : <Target size={14} />} 
+                  {missedTasks.length > 0 ? 'Action Required' : 'Primary Action'}
                 </div>
                 <h2 className="text-2xl font-sans text-text-primary mb-2">{primaryAction}</h2>
                 <p className="text-text-secondary text-sm mb-8">
-                  {primaryAction === "Complete Pending Assignment" 
-                    ? `You have ${pendingAssignments} pending assignments in the current module.` 
-                    : primaryAction === "Complete Module Review" 
-                    ? `You need to review ${pendingTopics} topics before completing this module.`
-                    : `Dive into ${currentNode.title} and explore the materials.`}
+                  {primaryActionDesc}
                 </p>
-                <Link 
-                  href={`/roadmap/${roadmap.id}/learn`}
-                  className="inline-flex border border-border-main bg-bg-sec hover:bg-bg-panel text-text-primary px-6 py-3 font-mono text-[11px] uppercase tracking-widest transition-colors items-center gap-2"
-                >
-                  Go to Action <ArrowRight size={14} />
-                </Link>
+                
+                <div className="flex flex-wrap gap-4">
+                  <Link 
+                    href={`/roadmap/${roadmap.id}/learn`}
+                    className="inline-flex border border-border-main bg-bg-sec hover:bg-bg-panel text-text-primary px-6 py-3 font-mono text-[11px] uppercase tracking-widest transition-colors items-center gap-2"
+                  >
+                    Go to Action <ArrowRight size={14} />
+                  </Link>
+                  
+                  {missedTasks.length > 0 && (
+                    <button 
+                      onClick={() => handleAdjustSchedule(activeFocusNode.id)}
+                      className="inline-flex border border-border-main bg-bg-main text-text-muted hover:text-text-primary px-6 py-3 font-mono text-[11px] uppercase tracking-widest transition-colors items-center gap-2"
+                    >
+                      <Calendar size={14} /> Adjust Schedule
+                    </button>
+                  )}
+                </div>
               </section>
             )}
 
@@ -218,7 +227,9 @@ export default function DashboardView() {
                   <div className="text-2xl font-sans font-bold text-text-primary mb-1">
                     {nodeAssignmentsDone.length} / {assignments.length}
                   </div>
-                  <div className="text-text-secondary text-sm">Assignments Done</div>
+                  <div className="text-text-secondary text-sm break-all truncate">
+                    {activeFocusNode.title}
+                  </div>
                 </div>
 
                 <div className="border border-border-main bg-bg-sec p-6">
@@ -233,36 +244,52 @@ export default function DashboardView() {
               </section>
             )}
 
-            {/* TODAY / UPCOMING */}
+            {/* SCHEDULE / TODAY / UPCOMING */}
             <section className="border border-border-main bg-bg-main p-6 md:p-8">
-              <div className="font-mono text-[11px] uppercase tracking-widest text-text-muted mb-6 flex items-center gap-2 border-b border-border-main pb-4">
-                <Clock size={14} /> Schedule
+              <div className="font-mono text-[11px] uppercase tracking-widest text-text-muted mb-6 flex justify-between items-center border-b border-border-main pb-4">
+                <div className="flex items-center gap-2"><Clock size={14} /> Schedule</div>
+                {missedTasks.length > 0 && <span className="text-error font-bold">{missedTasks.length} Missed</span>}
               </div>
               
               <div className="space-y-6">
-                {currentNodeSchedule && !isFullyCompleted && (
+                
+                {missedTasks.length > 0 && (
                   <div className="flex gap-4 items-start">
                     <div className="w-24 shrink-0 pt-1">
-                      <div className="font-mono text-[10px] text-accent uppercase tracking-widest">Current</div>
+                      <div className="font-mono text-[10px] text-error uppercase tracking-widest">Missed</div>
                     </div>
                     <div>
-                      <div className="font-sans text-[15px] text-text-primary mb-1">{currentNode.title}</div>
+                      <div className="font-sans text-[15px] text-text-primary mb-1">{missedTasks[0].node.title}</div>
                       <div className="font-mono text-[11px] text-text-muted">
-                        {formatDate(currentNodeSchedule.start)} - {formatDate(currentNodeSchedule.end)}
+                        Due: {formatDate(missedTasks[0].end)}
                       </div>
                     </div>
                   </div>
                 )}
                 
-                {nextNodeSchedule && !isFullyCompleted && (
+                {currentTask && !isFullyCompleted && currentTask.status !== 'MISSED' && (
+                  <div className="flex gap-4 items-start">
+                    <div className="w-24 shrink-0 pt-1">
+                      <div className="font-mono text-[10px] text-accent uppercase tracking-widest">Current</div>
+                    </div>
+                    <div>
+                      <div className="font-sans text-[15px] text-text-primary mb-1">{currentTask.node.title}</div>
+                      <div className="font-mono text-[11px] text-text-muted">
+                        {formatDate(currentTask.start)} - {formatDate(currentTask.end)}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {upcomingTasks.length > 0 && !isFullyCompleted && (
                   <div className="flex gap-4 items-start opacity-60">
                     <div className="w-24 shrink-0 pt-1">
                       <div className="font-mono text-[10px] text-text-muted uppercase tracking-widest">Upcoming</div>
                     </div>
                     <div>
-                      <div className="font-sans text-[15px] text-text-primary mb-1">{roadmap.nodes[currentNodeIndex + 1].title}</div>
+                      <div className="font-sans text-[15px] text-text-primary mb-1">{upcomingTasks[0].node.title}</div>
                       <div className="font-mono text-[11px] text-text-muted">
-                        {formatDate(nextNodeSchedule.start)} - {formatDate(nextNodeSchedule.end)}
+                        {formatDate(upcomingTasks[0].start)} - {formatDate(upcomingTasks[0].end)}
                       </div>
                     </div>
                   </div>
@@ -286,15 +313,16 @@ export default function DashboardView() {
               </div>
               
               <div className="space-y-4">
-                {roadmap.nodes.map((node, index) => {
-                  const isDone = completedNodes[node.id];
-                  const isCurrent = node.id === currentNode.id && !isFullyCompleted;
+                {schedule.map((s) => {
+                  const isDone = s.isCompleted;
+                  const isCurrent = !isDone && activeFocusNode.id === s.node.id;
+                  const isMissed = s.status === 'MISSED';
                   
                   return (
-                    <div key={node.id} className="relative flex gap-4">
+                    <div key={s.node.id} className="relative flex gap-4">
                       {/* Tree visual line */}
-                      {index < roadmap.nodes.length - 1 && (
-                        <div className={`absolute left-[7px] top-6 bottom-[-16px] w-[2px] ${isDone ? 'bg-success' : 'bg-border-main'}`} />
+                      {s.index < schedule.length - 1 && (
+                        <div className={`absolute left-[7px] top-6 bottom-[-16px] w-[2px] ${isDone ? 'bg-success' : isMissed ? 'bg-error' : 'bg-border-main'}`} />
                       )}
                       
                       <div className="relative z-10 pt-1">
@@ -302,6 +330,8 @@ export default function DashboardView() {
                           <div className="w-4 h-4 rounded-full bg-success flex items-center justify-center">
                             <Check size={10} className="text-bg-main font-bold" />
                           </div>
+                        ) : isMissed ? (
+                          <div className="w-4 h-4 rounded-full bg-error border-2 border-error" />
                         ) : isCurrent ? (
                           <div className="w-4 h-4 rounded-full bg-accent flex items-center justify-center animate-pulse">
                             <div className="w-2 h-2 rounded-full bg-bg-main" />
@@ -311,13 +341,16 @@ export default function DashboardView() {
                         )}
                       </div>
                       
-                      <div className={`flex-1 pb-4 ${isCurrent ? 'opacity-100' : isDone ? 'opacity-70' : 'opacity-40'}`}>
+                      <div className={`flex-1 pb-4 ${isCurrent || isMissed ? 'opacity-100' : isDone ? 'opacity-70' : 'opacity-40'}`}>
                         <div className="font-mono text-[10px] uppercase tracking-widest mb-1 text-text-muted">
-                          Module {index + 1}
+                          Module {s.index + 1}
                         </div>
-                        <div className={`font-sans text-[14px] leading-tight ${isCurrent ? 'text-accent font-bold' : 'text-text-primary'}`}>
-                          {node.title}
+                        <div className={`font-sans text-[14px] leading-tight ${isCurrent ? 'text-accent font-bold' : isMissed ? 'text-error font-bold' : 'text-text-primary'}`}>
+                          {s.node.title}
                         </div>
+                        {isMissed && (
+                          <div className="font-mono text-[9px] uppercase tracking-widest text-error mt-1">Overdue</div>
+                        )}
                       </div>
                     </div>
                   );
