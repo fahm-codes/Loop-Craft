@@ -6,10 +6,11 @@ import { getRoadmapById } from '@/data/roadmap';
 import Link from 'next/link';
 import { 
   Users, ChevronLeft, ArrowRight, UserMinus, User, CheckCircle, 
-  AlertTriangle, Copy, Check, Clock, BookOpen, Flag, Target, Settings, X
+  AlertTriangle, Copy, Check, Clock, BookOpen, Flag, Target, Settings, X, MessageSquare, ExternalLink
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { generateSchedule } from '@/utils/schedule';
+import { discordService } from '@/services/discordService';
 
 export default function GroupDetailView({ groupId }: { groupId: string }) {
   const [group, setGroup] = useState<StudyGroup | null>(null);
@@ -19,6 +20,9 @@ export default function GroupDetailView({ groupId }: { groupId: string }) {
   const [milestoneTitle, setMilestoneTitle] = useState('');
   const [milestoneNodeId, setMilestoneNodeId] = useState('');
   const [showMilestoneForm, setShowMilestoneForm] = useState(false);
+  
+  const [showDiscordForm, setShowDiscordForm] = useState(false);
+  const [discordInput, setDiscordInput] = useState('');
   
   const router = useRouter();
 
@@ -79,6 +83,15 @@ export default function GroupDetailView({ groupId }: { groupId: string }) {
     groupService.completeMilestone(group.id, userId, milestoneId);
     loadGroup();
   };
+
+  const handleUpdateDiscord = (e: React.FormEvent) => {
+    e.preventDefault();
+    groupService.updateDiscordInvite(group.id, userId, discordInput);
+    setShowDiscordForm(false);
+    loadGroup();
+  };
+
+  const effectiveDiscordInvite = discordService.getGroupDiscordInvite(group.discordInviteUrl);
 
   // Determine current user's actual progress to display (mocked as 100% accurate for "me")
   const currentUserEnrollment = localStorage.getItem(`loopcraft-enrollment-${roadmap.id}`);
@@ -291,10 +304,61 @@ export default function GroupDetailView({ groupId }: { groupId: string }) {
             </section>
           </div>
 
-          {/* RIGHT COLUMN: Group Roadmap Reference */}
-          <div className="lg:col-span-1">
-            <section className="border border-border-main bg-bg-sec p-6 md:p-8 h-full">
-              <div className="font-mono text-[11px] uppercase tracking-widest text-text-muted mb-6 flex items-center gap-2 border-b border-border-main pb-4">
+            <div className="lg:col-span-1 space-y-8">
+              
+              {/* DISCORD COMMUNITY */}
+              <section className="border border-[#5865F2] bg-[#5865F2]/5 p-6 md:p-8">
+                <div className="font-mono text-[11px] uppercase tracking-widest text-[#5865F2] mb-6 flex items-center justify-between border-b border-[#5865F2]/20 pb-4">
+                  <div className="flex items-center gap-2"><MessageSquare size={14} /> Discord Community</div>
+                  {isOwner && !showDiscordForm && (
+                    <button onClick={() => { setDiscordInput(group.discordInviteUrl || ''); setShowDiscordForm(true); }} className="text-text-muted hover:text-[#5865F2] transition-colors">
+                      <Settings size={14} />
+                    </button>
+                  )}
+                </div>
+
+                <div className="mb-6">
+                  <p className="text-text-primary font-sans text-sm mb-2 font-bold">Communication happens in Discord.</p>
+                  <p className="text-text-secondary font-mono text-[11px] leading-relaxed">
+                    LoopCraft tracks your learning progress, milestones, and assignments. Chat, discussion, voice, and study sessions are handled externally in our Discord server.
+                  </p>
+                </div>
+
+                {showDiscordForm ? (
+                  <form onSubmit={handleUpdateDiscord} className="mb-6 p-4 border border-border-main bg-bg-main">
+                    <label className="block font-mono text-[10px] text-text-muted uppercase tracking-widest mb-1">Group Discord Invite URL</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. https://discord.gg/invitecode" 
+                      value={discordInput}
+                      onChange={e => setDiscordInput(e.target.value)}
+                      className="w-full bg-bg-sec border border-border-main px-3 py-2 font-sans text-sm text-text-primary focus:outline-none focus:border-[#5865F2] mb-3"
+                    />
+                    <div className="flex gap-2">
+                      <button type="submit" className="bg-[#5865F2] text-white px-4 py-2 font-mono text-[11px] uppercase tracking-widest hover:opacity-90">Save</button>
+                      <button type="button" onClick={() => setShowDiscordForm(false)} className="text-text-muted hover:text-text-primary font-mono text-[11px] uppercase tracking-widest px-4">Cancel</button>
+                    </div>
+                  </form>
+                ) : effectiveDiscordInvite ? (
+                  <a 
+                    href={effectiveDiscordInvite} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="w-full border border-[#5865F2] bg-[#5865F2] text-white py-3 flex items-center justify-center gap-2 font-mono text-[11px] uppercase tracking-widest hover:bg-opacity-90 transition-all font-bold"
+                  >
+                    Join Discord <ExternalLink size={14} />
+                  </a>
+                ) : (
+                  <div className="p-4 border border-border-main bg-bg-main text-text-muted font-mono text-[11px] uppercase tracking-widest text-center flex flex-col items-center gap-2">
+                    <AlertTriangle size={16} />
+                    Discord connection is not configured yet.
+                  </div>
+                )}
+              </section>
+
+              {/* ROADMAP REFERENCE */}
+              <section className="border border-border-main bg-bg-sec p-6 md:p-8">
+                <div className="font-mono text-[11px] uppercase tracking-widest text-text-muted mb-6 flex items-center gap-2 border-b border-border-main pb-4">
                 <BookOpen size={14} /> Roadmap Reference
               </div>
               

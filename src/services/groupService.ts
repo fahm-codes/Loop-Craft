@@ -19,6 +19,7 @@ export interface StudyGroup {
   roadmapId: string;
   inviteCode: string;
   createdAt: string;
+  discordInviteUrl?: string;
   members: GroupMember[];
   milestones: GroupMilestone[];
 }
@@ -177,6 +178,21 @@ export const groupService = {
     }
     
     group.members = group.members.filter(m => m.id !== memberIdToRemove);
+    writeGroups(groups);
+    return { success: true };
+  },
+
+  updateDiscordInvite: (groupId: string, ownerId: string, inviteUrl: string): { success: boolean; error?: string } => {
+    let groups = readGroups();
+    const group = groups.find(g => g.id === groupId);
+    if (!group) return { success: false, error: 'Group not found.' };
+    
+    const owner = group.members.find(m => m.id === ownerId);
+    if (!owner || owner.role !== 'OWNER') {
+      return { success: false, error: 'Only the group owner can update the Discord link.' };
+    }
+    
+    group.discordInviteUrl = inviteUrl;
     writeGroups(groups);
     return { success: true };
   },
