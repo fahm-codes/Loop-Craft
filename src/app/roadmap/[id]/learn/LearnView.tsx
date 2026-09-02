@@ -1,68 +1,78 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Roadmap, RoadmapNode, Resource } from '@/data/roadmap';
 import Link from 'next/link';
-import { CheckCircle, PlayCircle, BookOpen, FileText, Code2, MonitorPlay, ListChecks, Target, ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import { CheckCircle, PlayCircle, BookOpen, FileText, Code2, MonitorPlay, ListChecks, Target, ChevronLeft, ChevronRight, Check, Menu, X } from 'lucide-react';
+
+const safeSetItem = (key: string, value: string) => {
+  try {
+    localStorage.setItem(key, value);
+  } catch (e) {
+    console.warn('Failed to save to localStorage', e);
+  }
+};
 
 export default function LearnView({ category }: { category: Roadmap }) {
   const [activeNodeId, setActiveNodeId] = useState<string>(category.nodes[0]?.id || '');
   const [enrollmentDate, setEnrollmentDate] = useState<string | null>(null);
   const [completedNodes, setCompletedNodes] = useState<Record<string, boolean>>({});
   
-  // Practice + Review State
   const [completedAssignments, setCompletedAssignments] = useState<Record<string, string[]>>({});
   const [reviewedTopics, setReviewedTopics] = useState<Record<string, string[]>>({});
 
   const [viewMode, setViewMode] = useState<'overview' | 'lesson'>('overview');
+  const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
+  
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    let savedEnrollment = localStorage.getItem(`loopcraft-enrollment-${category.id}`);
-    if (!savedEnrollment) {
-      savedEnrollment = new Date().toISOString();
-      localStorage.setItem(`loopcraft-enrollment-${category.id}`, savedEnrollment);
-    }
-    setEnrollmentDate(savedEnrollment);
+    setIsMounted(true);
+    try {
+      let savedEnrollment = localStorage.getItem(`loopcraft-enrollment-${category.id}`);
+      if (!savedEnrollment) {
+        savedEnrollment = new Date().toISOString();
+        safeSetItem(`loopcraft-enrollment-${category.id}`, savedEnrollment);
+      }
+      setEnrollmentDate(savedEnrollment);
 
-    const savedCompleted = localStorage.getItem(`loopcraft-completed-${category.id}`);
-    if (savedCompleted) {
-      setCompletedNodes(JSON.parse(savedCompleted));
-    }
+      const savedCompleted = localStorage.getItem(`loopcraft-completed-${category.id}`);
+      if (savedCompleted) setCompletedNodes(JSON.parse(savedCompleted));
 
-    const savedAssignments = localStorage.getItem(`loopcraft-assignments-${category.id}`);
-    if (savedAssignments) {
-      setCompletedAssignments(JSON.parse(savedAssignments));
-    }
+      const savedAssignments = localStorage.getItem(`loopcraft-assignments-${category.id}`);
+      if (savedAssignments) setCompletedAssignments(JSON.parse(savedAssignments));
 
-    const savedTopics = localStorage.getItem(`loopcraft-topics-${category.id}`);
-    if (savedTopics) {
-      setReviewedTopics(JSON.parse(savedTopics));
+      const savedTopics = localStorage.getItem(`loopcraft-topics-${category.id}`);
+      if (savedTopics) setReviewedTopics(JSON.parse(savedTopics));
+    } catch (e) {
+      console.warn('Failed to load from localStorage', e);
     }
   }, [category.id]);
 
   const markComplete = (nodeId: string) => {
     const updated = { ...completedNodes, [nodeId]: true };
     setCompletedNodes(updated);
-    localStorage.setItem(`loopcraft-completed-${category.id}`, JSON.stringify(updated));
+    safeSetItem(`loopcraft-completed-${category.id}`, JSON.stringify(updated));
     setViewMode('overview');
     
-    // Auto-advance
     const currentIndex = category.nodes.findIndex(n => n.id === nodeId);
     if (currentIndex < category.nodes.length - 1) {
       setActiveNodeId(category.nodes[currentIndex + 1].id);
+      setSelectedResource(null);
     }
   };
 
-  const toggleAssignment = (nodeId: string, url: string) => {
+  const toggleAssignment = (nodeId: string, title: string) => {
     const nodeAssignments = completedAssignments[nodeId] || [];
-    const isCompleted = nodeAssignments.includes(url);
+    const isCompleted = nodeAssignments.includes(title);
     const updated = isCompleted 
-      ? nodeAssignments.filter(u => u !== url)
-      : [...nodeAssignments, url];
+      ? nodeAssignments.filter(u => u !== title)
+      : [...nodeAssignments, title];
     
     const newAssignments = { ...completedAssignments, [nodeId]: updated };
     setCompletedAssignments(newAssignments);
-    localStorage.setItem(`loopcraft-assignments-${category.id}`, JSON.stringify(newAssignments));
+    safeSetItem(`loopcraft-assignments-${category.id}`, JSON.stringify(newAssignments));
   };
 
   const toggleTopic = (nodeId: string, topic: string) => {
@@ -74,37 +84,38 @@ export default function LearnView({ category }: { category: Roadmap }) {
     
     const newTopics = { ...reviewedTopics, [nodeId]: updated };
     setReviewedTopics(newTopics);
-    localStorage.setItem(`loopcraft-topics-${category.id}`, JSON.stringify(newTopics));
+    safeSetItem(`loopcraft-topics-${category.id}`, JSON.stringify(newTopics));
   };
 
-  const getDaysFromDuration = (duration: string) => {
-    const match = duration.match(/Week\s+(\d+)(?:-(\d+))?/i);
-    if (match) {
-      const startWeek = parseInt(match[1]);
-      const endWeek = match[2] ? parseInt(match[2]) : startWeek;
-      const numWeeks = (endWeek - startWeek) + 1;
-      return numWeeks * 7;
+  const schedule = useMemo(() => {
+    const result: { start: Date; end: Date }[] = [];
+    if (enrollmentDate) {
+      let currentDate = new Date(enrollmentDate);
+      category.nodes.forEach(node => {
+        let days = 7;
+        const match = node.duration.match(/Week\s+(\d+)(?:-(\d+))?/i);
+        if (match) {
+          const startWeek = parseInt(match[1]);
+          const endWeek = match[2] ? parseInt(match[2]) : startWeek;
+          days = ((endWeek - startWeek) + 1) * 7;
+        } else {
+          const num = parseInt(node.duration) || 1;
+          if (node.duration.toLowerCase().includes('week')) days = num * 7;
+          else if (node.duration.toLowerCase().includes('month')) days = num * 30;
+          else if (node.duration.toLowerCase().includes('day')) days = num;
+        }
+        
+        const startDate = new Date(currentDate);
+        const endDate = new Date(currentDate);
+        endDate.setDate(endDate.getDate() + Math.max(1, days - 1));
+        result.push({ start: startDate, end: endDate });
+        
+        currentDate = new Date(endDate);
+        currentDate.setDate(currentDate.getDate() + 1);
+      });
     }
-    const num = parseInt(duration) || 1;
-    if (duration.toLowerCase().includes('week')) return num * 7;
-    if (duration.toLowerCase().includes('month')) return num * 30;
-    if (duration.toLowerCase().includes('day')) return num;
-    return 7;
-  };
-
-  const schedule: { start: Date; end: Date }[] = [];
-  if (enrollmentDate) {
-    let currentDate = new Date(enrollmentDate);
-    category.nodes.forEach(node => {
-      const days = getDaysFromDuration(node.duration);
-      const startDate = new Date(currentDate);
-      const endDate = new Date(currentDate);
-      endDate.setDate(endDate.getDate() + Math.max(1, days - 1));
-      schedule.push({ start: startDate, end: endDate });
-      currentDate = new Date(endDate);
-      currentDate.setDate(currentDate.getDate() + 1);
-    });
-  }
+    return result;
+  }, [enrollmentDate, category.nodes]);
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -113,7 +124,6 @@ export default function LearnView({ category }: { category: Roadmap }) {
   const activeNode = category.nodes.find(n => n.id === activeNodeId) || category.nodes[0];
   const activeNodeIndex = category.nodes.findIndex(n => n.id === activeNodeId);
 
-  // Group resources
   const articles = activeNode?.resources?.filter(r => r.type === 'article') || [];
   const docs = activeNode?.resources?.filter(r => r.type === 'course' || r.type === 'other') || [];
   const videos = activeNode?.resources?.filter(r => r.type === 'video') || [];
@@ -132,10 +142,19 @@ export default function LearnView({ category }: { category: Roadmap }) {
   }
 
   return (
-    <div className="w-full min-h-screen bg-bg-main flex flex-col md:flex-row border-t border-border-main">
+    <div className="w-full min-h-screen bg-bg-main flex flex-col md:flex-row border-t border-border-main relative">
       
+      {/* MOBILE SIDEBAR TOGGLE */}
+      <button 
+        className="md:hidden sticky top-0 z-20 flex items-center justify-between p-4 bg-bg-sec border-b border-border-main"
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+      >
+        <span className="font-mono text-[12px] uppercase tracking-widest font-bold">Modules Menu</span>
+        {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+      </button>
+
       {/* SIDEBAR: Table of Contents */}
-      <aside className="w-full md:w-80 border-r border-border-main bg-bg-sec shrink-0 flex flex-col h-[calc(100vh-64px)] md:sticky md:top-16 overflow-y-auto z-10">
+      <aside className={`w-full md:w-80 border-r border-border-main bg-bg-sec shrink-0 flex flex-col h-[calc(100vh-64px)] md:sticky top-0 md:top-16 overflow-y-auto z-10 transition-all duration-300 ${isSidebarOpen ? 'block fixed inset-0 mt-14' : 'hidden md:flex'}`}>
         <div className="p-6 border-b border-border-main">
           <Link href={`/roadmap/${category.id}`} className="text-text-muted hover:text-text-primary text-[11px] font-mono tracking-widest uppercase mb-4 block">
             &larr; Back to Roadmap
@@ -148,13 +167,15 @@ export default function LearnView({ category }: { category: Roadmap }) {
         <nav className="flex-1 p-4">
           <div className="flex flex-col gap-2">
             {category.nodes.map((node, index) => {
-              const isCompleted = completedNodes[node.id];
+              const isCompleted = isMounted && completedNodes[node.id];
               return (
                 <button
                   key={node.id}
                   onClick={() => {
                     setActiveNodeId(node.id);
                     setViewMode('overview');
+                    setSelectedResource(null);
+                    setIsSidebarOpen(false);
                   }}
                   className={`text-left p-4 border transition-all relative ${
                     activeNodeId === node.id 
@@ -186,16 +207,53 @@ export default function LearnView({ category }: { category: Roadmap }) {
 
       {/* MAIN CONTENT AREA */}
       <main className="flex-1 p-6 md:p-12 lg:p-16 overflow-y-auto relative">
-        <div className="max-w-4xl mx-auto">
+        <div className={`max-w-4xl mx-auto transition-opacity duration-300 ${!isMounted ? 'opacity-0' : 'opacity-100'}`}>
           
-          {viewMode === 'overview' ? (
+          {selectedResource ? (
+            /* LOCAL RESOURCE READER VIEW */
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+              <button 
+                onClick={() => setSelectedResource(null)}
+                className="mb-6 font-mono text-[11px] text-accent hover:text-text-primary uppercase tracking-widest flex items-center gap-2 transition-colors"
+              >
+                <ChevronLeft size={16} /> Back to Lesson Content
+              </button>
+              
+              <div className="p-8 border border-border-main bg-bg-sec">
+                <div className="font-mono text-[10px] uppercase text-text-muted mb-4 tracking-widest flex items-center gap-2">
+                  <FileText size={14}/> Reading Material
+                </div>
+                <h2 className="text-2xl font-sans text-text-primary mb-8">{selectedResource.title}</h2>
+                
+                <div className="prose prose-invert max-w-none text-text-secondary font-serif leading-relaxed space-y-6">
+                  {selectedResource.content ? (
+                    <div className="whitespace-pre-wrap text-[15px]">{selectedResource.content}</div>
+                  ) : (
+                    <>
+                      <p>This is a native reading view for text materials and assignments.</p>
+                      <div className="p-6 border-l-2 border-accent bg-bg-main mt-8">
+                        <p className="font-sans text-sm text-text-muted mb-2 uppercase tracking-widest">System Message</p>
+                        <p className="m-0">No direct text content provided for this resource.</p>
+                      </div>
+                    </>
+                  )}
+                  
+                  <div className="mt-12 pt-6 border-t border-border-main">
+                    <p className="text-sm">
+                      <strong>Original Source:</strong> <a href={selectedResource.url} target="_blank" rel="noreferrer" className="text-accent hover:underline break-all">{selectedResource.url}</a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : viewMode === 'overview' ? (
             /* MODULE OVERVIEW */
             <div className="animate-in fade-in duration-300">
               <div className="font-mono text-[11px] tracking-widest uppercase text-text-muted mb-6 flex items-center gap-3">
                 <span>Module {activeNodeIndex + 1}</span>
                 <span className="text-border-main">|</span>
                 <span>{activeNode?.duration}</span>
-                {activeNode?.id && completedNodes[activeNode.id] && (
+                {activeNode?.id && isMounted && completedNodes[activeNode.id] && (
                   <>
                     <span className="text-border-main">|</span>
                     <span className="text-success flex items-center gap-1"><Check size={14}/> Completed</span>
@@ -237,7 +295,7 @@ export default function LearnView({ category }: { category: Roadmap }) {
                     onClick={() => setViewMode('lesson')}
                     className="w-full sm:w-auto border border-accent bg-accent text-bg-main px-12 py-4 hover:opacity-90 font-mono text-[13px] font-bold uppercase tracking-widest transition-opacity flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(99,133,240,0.3)]"
                  >
-                   <PlayCircle size={20} /> {activeNode?.id && completedNodes[activeNode.id] ? 'Review Lesson' : 'Start Lesson'}
+                   <PlayCircle size={20} /> {activeNode?.id && isMounted && completedNodes[activeNode.id] ? 'Review Lesson' : 'Start Lesson'}
                  </button>
               </div>
             </div>
@@ -290,15 +348,18 @@ export default function LearnView({ category }: { category: Roadmap }) {
                       <FileText size={18} className="text-accent" /> 2. Required Reading
                     </h2>
                     <div className="grid grid-cols-1 gap-4">
-                      {articles.map((res, i) => (
-                        <a key={i} href={res.url} target="_blank" rel="noreferrer" className="flex items-start gap-4 p-5 border border-border-main bg-bg-sec hover:border-accent hover:bg-[#6385f005] transition-all group">
-                          <div className="flex-1">
-                            <strong className="font-sans text-[15px] block mb-2 text-text-primary group-hover:text-accent transition-colors">{res.title}</strong>
-                            <span className="font-mono text-[11px] text-text-muted break-all">{res.url}</span>
+                      {articles.map((res, i) => {
+                        const isExternal = res.url.includes('http');
+                        return (
+                          <div key={i} className="flex items-start gap-4 p-5 border border-border-main bg-bg-sec hover:border-accent hover:bg-[#6385f005] transition-all group cursor-pointer" onClick={() => isExternal ? window.open(res.url, '_blank') : setSelectedResource(res)}>
+                            <div className="flex-1">
+                              <strong className="font-sans text-[15px] block mb-2 text-text-primary group-hover:text-accent transition-colors">{res.title}</strong>
+                              <span className="font-mono text-[11px] text-text-muted break-all">{isExternal ? res.url : 'Read in workspace'}</span>
+                            </div>
+                            <ChevronRight size={18} className="text-text-muted group-hover:text-accent" />
                           </div>
-                          <ChevronRight size={18} className="text-text-muted group-hover:text-accent" />
-                        </a>
-                      ))}
+                        );
+                      })}
                     </div>
                   </section>
                 )}
@@ -351,13 +412,14 @@ export default function LearnView({ category }: { category: Roadmap }) {
                     </h2>
                     <div className="grid grid-cols-1 gap-4">
                       {assignments.map((res, i) => {
-                        const isCompleted = (completedAssignments[activeNode.id] || []).includes(res.url);
+                        const isCompleted = isMounted && (completedAssignments[activeNode.id] || []).includes(res.title);
+                        const isExternal = res.url.includes('http');
                         return (
-                          <div key={i} className={`flex items-start gap-4 p-6 border transition-all relative overflow-hidden ${isCompleted ? 'border-success bg-[#22c55e05]' : 'border-error bg-[#ff4d4f05]'}`}>
+                          <div key={i} className={`flex flex-col sm:flex-row sm:items-start gap-4 p-6 border transition-all relative overflow-hidden ${isCompleted ? 'border-success bg-[#22c55e05]' : 'border-error bg-[#ff4d4f05]'}`}>
                             <div className={`absolute top-0 left-0 w-1 h-full ${isCompleted ? 'bg-success' : 'bg-error'}`}></div>
                             
                             <button 
-                              onClick={() => toggleAssignment(activeNode.id, res.url)} 
+                              onClick={() => toggleAssignment(activeNode.id, res.title)} 
                               className={`shrink-0 mt-1 flex items-center justify-center w-6 h-6 border rounded-sm transition-colors ${isCompleted ? 'bg-success border-success text-bg-main' : 'border-error text-transparent hover:bg-[#ff4d4f20]'}`}
                             >
                               <Check size={14} />
@@ -365,10 +427,16 @@ export default function LearnView({ category }: { category: Roadmap }) {
 
                             <div className="flex-1">
                               <strong className={`font-sans text-[16px] block mb-2 ${isCompleted ? 'text-success' : 'text-error'}`}>{res.title}</strong>
-                              <a href={res.url} target="_blank" rel="noreferrer" className="font-mono text-[12px] text-text-muted break-all block mb-4 hover:text-text-primary hover:underline">{res.url}</a>
-                              <a href={res.url} target="_blank" rel="noreferrer" className="font-mono text-[10px] uppercase tracking-widest text-text-primary bg-bg-main px-3 py-1.5 border border-border-main inline-block hover:border-text-muted transition-colors">
-                                Open Assignment Workspace &rarr;
-                              </a>
+                              
+                              {isExternal ? (
+                                <a href={res.url} target="_blank" rel="noreferrer" className="font-mono text-[12px] text-text-muted break-all block mb-4 hover:text-text-primary hover:underline">{res.url}</a>
+                              ) : (
+                                <div className="font-mono text-[12px] text-text-muted break-all block mb-4">Internal Workspace Assignment</div>
+                              )}
+                              
+                              <button onClick={() => isExternal ? window.open(res.url, '_blank') : setSelectedResource(res)} className="font-mono text-[10px] uppercase tracking-widest text-text-primary bg-bg-main px-3 py-1.5 border border-border-main inline-block hover:border-text-muted transition-colors">
+                                {isExternal ? 'Open External Assignment' : 'Open Local Assignment'} &rarr;
+                              </button>
                             </div>
                           </div>
                         );
@@ -399,7 +467,7 @@ export default function LearnView({ category }: { category: Roadmap }) {
                     </p>
                     <div className="flex flex-col gap-3">
                       {activeNode.topics.map((topic, i) => {
-                        const isReviewed = (reviewedTopics[activeNode.id] || []).includes(topic);
+                        const isReviewed = isMounted && (reviewedTopics[activeNode.id] || []).includes(topic);
                         return (
                           <button 
                             key={i}
@@ -424,9 +492,10 @@ export default function LearnView({ category }: { category: Roadmap }) {
                   const nodeAssignments = completedAssignments[activeNode.id] || [];
                   const nodeTopics = reviewedTopics[activeNode.id] || [];
                   
-                  const allAssignmentsDone = assignments.length === 0 || nodeAssignments.length === assignments.length;
-                  const allTopicsDone = nodeTopics.length === activeNode.topics.length;
-                  const isReadyToComplete = allAssignmentsDone && allTopicsDone;
+                  // Fix: check that every actual resource title is included in the state
+                  const allAssignmentsDone = assignments.length === 0 || assignments.every(res => nodeAssignments.includes(res.title));
+                  const allTopicsDone = activeNode.topics.every(t => nodeTopics.includes(t));
+                  const isReadyToComplete = isMounted && allAssignmentsDone && allTopicsDone;
                   
                   return (
                     <section className="pt-8 border-t-2 border-border-main mt-16 text-center">
