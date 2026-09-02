@@ -101,15 +101,11 @@ export default async function CategoryPage({ params }: { params: { id: string } 
                     <h3 className="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
                       <Code2 size={18} className="text-accent" /> {subcat.title}
                     </h3>
-                    {subcat.roadmaps && subcat.roadmaps.length > 0 ? (
+                    {subcat.roadmaps && subcat.roadmaps.length > 0 && (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {subcat.roadmaps.map(roadmap => (
                           <RoadmapCard key={roadmap.id} roadmap={roadmap} />
                         ))}
-                      </div>
-                    ) : (
-                      <div className="bg-bg-sec border border-dashed border-border-main p-6 text-center text-text-muted font-mono text-[11px] uppercase tracking-widest">
-                        Missing Roadmap Content
                       </div>
                     )}
                   </div>

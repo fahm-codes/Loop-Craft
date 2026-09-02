@@ -404,6 +404,7 @@ export const skillBasedRoadmaps: RoadmapType = {
         { id: 'javascript-typescript', title: 'JavaScript / TypeScript', description: 'Learn JS and typed JS for modern web dev.', nodes: [] },
         { id: 'dsa', title: 'Data Structures & Algorithms', description: 'Master core CS concepts for interviews and performance.', nodes: [] },
         { id: 'sql', title: 'SQL', description: 'Master relational databases and querying.', nodes: [] },
+        { id: 'git-github', title: 'Git & GitHub', description: 'Version control mastery.', nodes: [] },
       ]
     },
     {
@@ -440,7 +441,6 @@ export const skillBasedRoadmaps: RoadmapType = {
       id: 'ai-ml',
       title: 'AI & Machine Learning',
       roadmaps: [
-        { id: 'machine-learning', title: 'Machine Learning', description: 'Core ML concepts and algorithms.', nodes: [] },
         { id: 'gen-ai', title: 'Generative AI', description: 'Learn Generative models and Prompt Engineering.', nodes: [] },
         { id: 'llm-engineering', title: 'LLM Engineering', description: 'Fine-tune and deploy Large Language Models.', nodes: [] },
         { id: 'rag', title: 'RAG', description: 'Build Retrieval-Augmented Generation systems.', nodes: [] },
@@ -454,14 +454,12 @@ export const skillBasedRoadmaps: RoadmapType = {
         { id: 'linux', title: 'Linux', description: 'Master the Linux command line.', nodes: [] },
         { id: 'docker', title: 'Docker', description: 'Containerize your applications.', nodes: [] },
         { id: 'cloud', title: 'Cloud', description: 'AWS, Azure, and GCP basics.', nodes: [] },
-        { id: 'git-github', title: 'Git & GitHub', description: 'Version control mastery.', nodes: [] },
       ]
     },
     {
       id: 'computer-science',
       title: 'Computer Science',
       roadmaps: [
-        { id: 'system-design', title: 'System Design', description: 'Design large-scale distributed systems.', nodes: [] },
         { id: 'software-architecture', title: 'Software Architecture', description: 'Project Architecture and code structuring.', nodes: [] },
         { id: 'db-design', title: 'Database Design', description: 'Relational and NoSQL database modeling.', nodes: [] }
       ]
