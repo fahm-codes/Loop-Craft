@@ -5,9 +5,10 @@ import { platformCategories, Roadmap, RoadmapNode } from '@/data/roadmap';
 import Link from 'next/link';
 import { 
   Terminal, ArrowRight, BookOpen, Clock, CheckCircle, 
-  Circle, Target, Code2, ListChecks, PlayCircle, Check, AlertTriangle, Calendar
+  Circle, Target, Code2, ListChecks, PlayCircle, Check, AlertTriangle, Calendar, Users
 } from 'lucide-react';
 import { generateSchedule, adjustScheduleToStartToday } from '@/utils/schedule';
+import { groupService, getCurrentUserId, StudyGroup } from '@/services/groupService';
 
 interface ActiveRoadmapState {
   roadmap: Roadmap;
@@ -20,6 +21,7 @@ interface ActiveRoadmapState {
 export default function DashboardView() {
   const [activeRoadmap, setActiveRoadmap] = useState<ActiveRoadmapState | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [myGroups, setMyGroups] = useState<StudyGroup[]>([]);
 
   // Force re-render for schedule adjustment
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -27,6 +29,10 @@ export default function DashboardView() {
   useEffect(() => {
     let latestRoadmap: ActiveRoadmapState | null = null;
     let latestEnrollmentTime = 0;
+    
+    // Load groups
+    const uid = getCurrentUserId();
+    setMyGroups(groupService.getGroupsForUser(uid));
 
     platformCategories.forEach(category => {
       category.roadmaps.forEach(r => {
@@ -302,6 +308,37 @@ export default function DashboardView() {
                 )}
               </div>
             </section>
+
+            {/* MY STUDY GROUPS WIDGET */}
+            {myGroups.length > 0 && (
+              <section className="border border-border-main bg-bg-sec p-6 md:p-8">
+                <div className="font-mono text-[11px] uppercase tracking-widest text-text-muted mb-6 flex justify-between items-center border-b border-border-main pb-4">
+                  <div className="flex items-center gap-2"><Users size={14} /> My Study Groups</div>
+                  <Link href="/groups" className="text-accent hover:text-text-primary transition-colors">View All</Link>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {myGroups.slice(0, 2).map(g => {
+                    const upcomingMilestone = g.milestones.find(m => !m.isCompleted);
+                    return (
+                      <Link key={g.id} href={`/groups/${g.id}`} className="border border-border-main bg-bg-main p-4 hover:border-accent transition-colors block">
+                        <div className="font-sans text-[15px] text-text-primary font-bold mb-2 truncate">{g.name}</div>
+                        <div className="flex justify-between items-end">
+                          <div className="font-mono text-[10px] text-text-muted uppercase tracking-widest flex items-center gap-2">
+                            <Users size={12} /> {g.members.length}/5 Members
+                          </div>
+                          {upcomingMilestone && (
+                            <div className="font-mono text-[9px] text-accent uppercase tracking-widest truncate max-w-[100px]">
+                              {upcomingMilestone.title}
+                            </div>
+                          )}
+                        </div>
+                      </Link>
+                    )
+                  })}
+                </div>
+              </section>
+            )}
 
           </div>
           

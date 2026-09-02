@@ -48,10 +48,10 @@ export default function Navbar({ user, profile }: { user: any, profile: any }) {
         {/* Middle: Links */}
         <div className="hidden md:flex items-center gap-10 font-sans font-medium text-[15px]">
           <Link href="/" className="hover:text-text-primary transition-colors py-[18px]">Home</Link>
-          <Link href="/dashboard" className="text-accent hover:opacity-80 transition-opacity py-[18px]">Dashboard</Link>
+          <Link href="/dashboard" className="hover:text-text-primary transition-colors py-[18px]">Dashboard</Link>
+          <Link href="/groups" className="text-accent hover:opacity-80 transition-opacity py-[18px]">Groups</Link>
           <Link href="/roadmaps" className="hover:text-text-primary transition-colors py-[18px]">Roadmaps</Link>
           <Link href="/roadmap/ai-engineering/learn" className="hover:text-text-primary transition-colors py-[18px]">Learn</Link>
-          <Link href="#" className="hover:text-text-primary transition-colors py-[18px]">Community</Link>
         </div>
 
         {/* Right: Actions */}
