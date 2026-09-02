@@ -9,10 +9,14 @@ export default function LearnView({ category }: { category: Roadmap }) {
   const [activeNodeId, setActiveNodeId] = useState<string>(category.nodes[0]?.id || '');
   const [enrollmentDate, setEnrollmentDate] = useState<string | null>(null);
   const [completedNodes, setCompletedNodes] = useState<Record<string, boolean>>({});
+  
+  // Practice + Review State
+  const [completedAssignments, setCompletedAssignments] = useState<Record<string, string[]>>({});
+  const [reviewedTopics, setReviewedTopics] = useState<Record<string, string[]>>({});
+
   const [viewMode, setViewMode] = useState<'overview' | 'lesson'>('overview');
 
   useEffect(() => {
-    // If they reach this page, make sure they have an enrollment date set. 
     let savedEnrollment = localStorage.getItem(`loopcraft-enrollment-${category.id}`);
     if (!savedEnrollment) {
       savedEnrollment = new Date().toISOString();
@@ -20,10 +24,19 @@ export default function LearnView({ category }: { category: Roadmap }) {
     }
     setEnrollmentDate(savedEnrollment);
 
-    // Load completed modules
     const savedCompleted = localStorage.getItem(`loopcraft-completed-${category.id}`);
     if (savedCompleted) {
       setCompletedNodes(JSON.parse(savedCompleted));
+    }
+
+    const savedAssignments = localStorage.getItem(`loopcraft-assignments-${category.id}`);
+    if (savedAssignments) {
+      setCompletedAssignments(JSON.parse(savedAssignments));
+    }
+
+    const savedTopics = localStorage.getItem(`loopcraft-topics-${category.id}`);
+    if (savedTopics) {
+      setReviewedTopics(JSON.parse(savedTopics));
     }
   }, [category.id]);
 
@@ -33,11 +46,35 @@ export default function LearnView({ category }: { category: Roadmap }) {
     localStorage.setItem(`loopcraft-completed-${category.id}`, JSON.stringify(updated));
     setViewMode('overview');
     
-    // Auto-advance to next module if available
+    // Auto-advance
     const currentIndex = category.nodes.findIndex(n => n.id === nodeId);
     if (currentIndex < category.nodes.length - 1) {
       setActiveNodeId(category.nodes[currentIndex + 1].id);
     }
+  };
+
+  const toggleAssignment = (nodeId: string, url: string) => {
+    const nodeAssignments = completedAssignments[nodeId] || [];
+    const isCompleted = nodeAssignments.includes(url);
+    const updated = isCompleted 
+      ? nodeAssignments.filter(u => u !== url)
+      : [...nodeAssignments, url];
+    
+    const newAssignments = { ...completedAssignments, [nodeId]: updated };
+    setCompletedAssignments(newAssignments);
+    localStorage.setItem(`loopcraft-assignments-${category.id}`, JSON.stringify(newAssignments));
+  };
+
+  const toggleTopic = (nodeId: string, topic: string) => {
+    const nodeTopics = reviewedTopics[nodeId] || [];
+    const isCompleted = nodeTopics.includes(topic);
+    const updated = isCompleted 
+      ? nodeTopics.filter(t => t !== topic)
+      : [...nodeTopics, topic];
+    
+    const newTopics = { ...reviewedTopics, [nodeId]: updated };
+    setReviewedTopics(newTopics);
+    localStorage.setItem(`loopcraft-topics-${category.id}`, JSON.stringify(newTopics));
   };
 
   const getDaysFromDuration = (duration: string) => {
@@ -76,7 +113,7 @@ export default function LearnView({ category }: { category: Roadmap }) {
   const activeNode = category.nodes.find(n => n.id === activeNodeId) || category.nodes[0];
   const activeNodeIndex = category.nodes.findIndex(n => n.id === activeNodeId);
 
-  // Group resources for the Lesson View
+  // Group resources
   const articles = activeNode?.resources?.filter(r => r.type === 'article') || [];
   const docs = activeNode?.resources?.filter(r => r.type === 'course' || r.type === 'other') || [];
   const videos = activeNode?.resources?.filter(r => r.type === 'video') || [];
@@ -313,18 +350,29 @@ export default function LearnView({ category }: { category: Roadmap }) {
                       <Code2 size={18} className="text-error" /> 5. Practice & Assignments
                     </h2>
                     <div className="grid grid-cols-1 gap-4">
-                      {assignments.map((res, i) => (
-                        <a key={i} href={res.url} target="_blank" rel="noreferrer" className="flex items-start gap-4 p-6 border border-error bg-[#ff4d4f05] hover:bg-[#ff4d4f10] transition-all group relative overflow-hidden">
-                          <div className="absolute top-0 left-0 w-1 h-full bg-error"></div>
-                          <div className="flex-1">
-                            <strong className="font-sans text-[16px] block mb-2 text-error">{res.title}</strong>
-                            <span className="font-mono text-[12px] text-text-muted break-all block mb-4">{res.url}</span>
-                            <div className="font-mono text-[10px] uppercase tracking-widest text-text-primary bg-bg-main px-3 py-1.5 border border-border-main inline-block">
-                              Open Assignment Workspace &rarr;
+                      {assignments.map((res, i) => {
+                        const isCompleted = (completedAssignments[activeNode.id] || []).includes(res.url);
+                        return (
+                          <div key={i} className={`flex items-start gap-4 p-6 border transition-all relative overflow-hidden ${isCompleted ? 'border-success bg-[#22c55e05]' : 'border-error bg-[#ff4d4f05]'}`}>
+                            <div className={`absolute top-0 left-0 w-1 h-full ${isCompleted ? 'bg-success' : 'bg-error'}`}></div>
+                            
+                            <button 
+                              onClick={() => toggleAssignment(activeNode.id, res.url)} 
+                              className={`shrink-0 mt-1 flex items-center justify-center w-6 h-6 border rounded-sm transition-colors ${isCompleted ? 'bg-success border-success text-bg-main' : 'border-error text-transparent hover:bg-[#ff4d4f20]'}`}
+                            >
+                              <Check size={14} />
+                            </button>
+
+                            <div className="flex-1">
+                              <strong className={`font-sans text-[16px] block mb-2 ${isCompleted ? 'text-success' : 'text-error'}`}>{res.title}</strong>
+                              <a href={res.url} target="_blank" rel="noreferrer" className="font-mono text-[12px] text-text-muted break-all block mb-4 hover:text-text-primary hover:underline">{res.url}</a>
+                              <a href={res.url} target="_blank" rel="noreferrer" className="font-mono text-[10px] uppercase tracking-widest text-text-primary bg-bg-main px-3 py-1.5 border border-border-main inline-block hover:border-text-muted transition-colors">
+                                Open Assignment Workspace &rarr;
+                              </a>
                             </div>
                           </div>
-                        </a>
-                      ))}
+                        );
+                      })}
                     </div>
                   </section>
                 ) : (
@@ -343,44 +391,96 @@ export default function LearnView({ category }: { category: Roadmap }) {
                 {/* 6. REVIEW / QUIZ */}
                 <section>
                   <h2 className="font-mono text-[13px] uppercase tracking-widest text-text-primary mb-6 flex items-center gap-3 border-b border-border-main pb-4">
-                    <ListChecks size={18} className="text-accent" /> 6. Knowledge Check
+                    <ListChecks size={18} className="text-accent" /> 6. Self-Review Checklist
                   </h2>
-                  <div className="p-8 border border-border-main bg-bg-main flex flex-col items-center text-center">
-                    <ListChecks size={48} className="text-accent mb-6" />
-                    <h3 className="text-xl font-sans font-bold text-text-primary mb-3">Module Quiz</h3>
-                    <p className="text-text-secondary text-sm max-w-md mb-8 leading-relaxed">
-                      Test your understanding of the core concepts covered in this module before moving forward.
+                  <div className="p-8 border border-border-main bg-bg-sec">
+                    <p className="text-text-secondary text-sm mb-6">
+                      Before moving forward, honestly review your understanding of the core concepts covered in this module. Check off each topic you feel confident about.
                     </p>
-                    <button disabled className="border border-border-main bg-bg-sec text-text-muted px-8 py-3 font-mono text-[11px] uppercase tracking-widest cursor-not-allowed">
-                      Quiz Coming Soon
-                    </button>
+                    <div className="flex flex-col gap-3">
+                      {activeNode.topics.map((topic, i) => {
+                        const isReviewed = (reviewedTopics[activeNode.id] || []).includes(topic);
+                        return (
+                          <button 
+                            key={i}
+                            onClick={() => toggleTopic(activeNode.id, topic)}
+                            className={`flex items-start text-left gap-4 p-4 border transition-colors ${isReviewed ? 'border-accent bg-[#6385f008]' : 'border-border-main bg-bg-main hover:border-text-muted'}`}
+                          >
+                            <div className={`shrink-0 mt-0.5 flex items-center justify-center w-5 h-5 border rounded-sm transition-colors ${isReviewed ? 'bg-accent border-accent text-bg-main' : 'border-text-muted text-transparent'}`}>
+                              <Check size={12} />
+                            </div>
+                            <span className={`font-sans text-[15px] ${isReviewed ? 'text-text-primary' : 'text-text-secondary'}`}>
+                              {topic}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 </section>
                 
                 {/* 7. COMPLETION */}
-                <section className="pt-8 border-t-2 border-border-main mt-16 text-center">
-                  <h2 className="text-2xl font-sans font-bold text-text-primary mb-4">
-                    Ready to complete this module?
-                  </h2>
-                  <p className="text-text-secondary text-sm mb-10">
-                    Make sure you've reviewed all materials and completed the assignments.
-                  </p>
+                {(() => {
+                  const nodeAssignments = completedAssignments[activeNode.id] || [];
+                  const nodeTopics = reviewedTopics[activeNode.id] || [];
                   
-                  <div className="flex flex-wrap justify-center gap-4">
-                    <button 
-                      onClick={() => setViewMode('overview')}
-                      className="border border-border-main text-text-secondary hover:text-text-primary hover:bg-bg-sec px-8 py-4 font-mono text-[12px] uppercase tracking-widest transition-colors"
-                    >
-                      Not Yet
-                    </button>
-                    <button 
-                      onClick={() => markComplete(activeNode.id)}
-                      className="border border-success bg-[#22c55e10] text-success hover:bg-success hover:text-bg-main px-8 py-4 font-mono text-[12px] uppercase tracking-widest font-bold transition-all flex items-center gap-3"
-                    >
-                      <CheckCircle size={18} /> Mark as Complete
-                    </button>
-                  </div>
-                </section>
+                  const allAssignmentsDone = assignments.length === 0 || nodeAssignments.length === assignments.length;
+                  const allTopicsDone = nodeTopics.length === activeNode.topics.length;
+                  const isReadyToComplete = allAssignmentsDone && allTopicsDone;
+                  
+                  return (
+                    <section className="pt-8 border-t-2 border-border-main mt-16 text-center">
+                      <h2 className="text-2xl font-sans font-bold text-text-primary mb-4">
+                        Ready to complete this module?
+                      </h2>
+                      
+                      <div className="flex justify-center gap-8 mb-8">
+                        <div className="text-center">
+                          <div className={`font-mono text-2xl font-bold ${allTopicsDone ? 'text-accent' : 'text-text-primary'}`}>
+                            {nodeTopics.length} / {activeNode.topics.length}
+                          </div>
+                          <div className="font-mono text-[10px] uppercase tracking-widest text-text-muted mt-2">Topics Reviewed</div>
+                        </div>
+                        {assignments.length > 0 && (
+                          <div className="text-center">
+                            <div className={`font-mono text-2xl font-bold ${allAssignmentsDone ? 'text-success' : 'text-text-primary'}`}>
+                              {nodeAssignments.length} / {assignments.length}
+                            </div>
+                            <div className="font-mono text-[10px] uppercase tracking-widest text-text-muted mt-2">Assignments Done</div>
+                          </div>
+                        )}
+                      </div>
+
+                      {!isReadyToComplete && (
+                        <div className="mb-6">
+                          <p className="text-error text-sm bg-[#ff4d4f10] p-4 inline-block border border-error">
+                            Please complete all assignments and review all topics to unlock completion.
+                          </p>
+                        </div>
+                      )}
+                      
+                      <div className="flex flex-wrap justify-center gap-4">
+                        <button 
+                          onClick={() => setViewMode('overview')}
+                          className="border border-border-main text-text-secondary hover:text-text-primary hover:bg-bg-sec px-8 py-4 font-mono text-[12px] uppercase tracking-widest transition-colors"
+                        >
+                          Not Yet
+                        </button>
+                        <button 
+                          disabled={!isReadyToComplete}
+                          onClick={() => markComplete(activeNode.id)}
+                          className={`border px-8 py-4 font-mono text-[12px] uppercase tracking-widest font-bold transition-all flex items-center gap-3 ${
+                            isReadyToComplete 
+                              ? 'border-success bg-[#22c55e10] text-success hover:bg-success hover:text-bg-main shadow-[0_0_20px_rgba(34,197,94,0.3)]' 
+                              : 'border-border-main bg-bg-sec text-text-muted opacity-50 cursor-not-allowed'
+                          }`}
+                        >
+                          <CheckCircle size={18} /> Mark as Complete
+                        </button>
+                      </div>
+                    </section>
+                  );
+                })()}
 
               </div>
               
