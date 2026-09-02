@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
-import { platformCategories, Roadmap, RoadmapNode } from '@/data/roadmap';
+import { platformCategories, getAllRoadmaps, Roadmap, RoadmapNode } from '@/data/roadmap';
 import Link from 'next/link';
 import { 
   Terminal, ArrowRight, BookOpen, Clock, CheckCircle, 
@@ -34,33 +34,33 @@ export default function DashboardView() {
     const uid = getCurrentUserId();
     setMyGroups(groupService.getGroupsForUser(uid));
 
-    platformCategories.forEach(category => {
-      category.roadmaps.forEach(r => {
-        const enrollKey = `loopcraft-enrollment-${r.id}`;
-        const enrollDateStr = localStorage.getItem(enrollKey);
+    const allRoadmaps = getAllRoadmaps();
+    
+    allRoadmaps.forEach(r => {
+      const enrollKey = `loopcraft-enrollment-${r.id}`;
+      const enrollDateStr = localStorage.getItem(enrollKey);
+      
+      if (enrollDateStr) {
+        const enrollTime = new Date(enrollDateStr).getTime();
         
-        if (enrollDateStr) {
-          const enrollTime = new Date(enrollDateStr).getTime();
-          
-          if (enrollTime > latestEnrollmentTime) {
-            latestEnrollmentTime = enrollTime;
-            const fullRoadmap = require('@/data/roadmap').getRoadmapById(r.id);
-            if (!fullRoadmap) return;
+        if (enrollTime > latestEnrollmentTime) {
+          latestEnrollmentTime = enrollTime;
+          const fullRoadmap = require('@/data/roadmap').getRoadmapById(r.id);
+          if (!fullRoadmap) return;
 
-            const completedStr = localStorage.getItem(`loopcraft-completed-${r.id}`);
-            const assignmentsStr = localStorage.getItem(`loopcraft-assignments-${r.id}`);
-            const topicsStr = localStorage.getItem(`loopcraft-topics-${r.id}`);
+          const completedStr = localStorage.getItem(`loopcraft-completed-${r.id}`);
+          const assignmentsStr = localStorage.getItem(`loopcraft-assignments-${r.id}`);
+          const topicsStr = localStorage.getItem(`loopcraft-topics-${r.id}`);
 
-            latestRoadmap = {
-              roadmap: fullRoadmap,
-              enrollmentDate: enrollDateStr,
-              completedNodes: completedStr ? JSON.parse(completedStr) : {},
-              completedAssignments: assignmentsStr ? JSON.parse(assignmentsStr) : {},
-              reviewedTopics: topicsStr ? JSON.parse(topicsStr) : {}
-            };
-          }
+          latestRoadmap = {
+            roadmap: fullRoadmap,
+            enrollmentDate: enrollDateStr,
+            completedNodes: completedStr ? JSON.parse(completedStr) : {},
+            completedAssignments: assignmentsStr ? JSON.parse(assignmentsStr) : {},
+            reviewedTopics: topicsStr ? JSON.parse(topicsStr) : {}
+          };
         }
-      });
+      }
     });
 
     setActiveRoadmap(latestRoadmap);

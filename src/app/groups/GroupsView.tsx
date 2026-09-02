@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { StudyGroup, groupService, getCurrentUserId } from '@/services/groupService';
-import { platformCategories } from '@/data/roadmap';
+import { platformCategories, getAllRoadmaps } from '@/data/roadmap';
 import Link from 'next/link';
 import { Users, Plus, ArrowRight, UserPlus, AlertTriangle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -139,8 +139,8 @@ export default function GroupsView() {
                   onChange={e => setCreateRoadmapId(e.target.value)}
                   className="w-full bg-bg-main border border-border-main px-4 py-3 font-sans text-sm text-text-primary focus:outline-none focus:border-accent"
                 >
-                  <option value="">Select a Roadmap...</option>
-                  {platformCategories.flatMap(c => c.roadmaps).map(r => (
+                  <option value="" disabled>Select a Roadmap...</option>
+                  {getAllRoadmaps().map(r => (
                     <option key={r.id} value={r.id}>{r.title}</option>
                   ))}
                 </select>

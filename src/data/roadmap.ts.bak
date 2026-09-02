@@ -25,27 +25,11 @@ export interface Roadmap {
   nodes: RoadmapNode[];
 }
 
-export interface Subcategory {
-  id: string;
-  title: string;
-  description?: string;
-  roadmaps: Partial<Roadmap>[];
-}
-
 export interface Category {
   id: string;
   title: string;
-  description?: string;
-  subcategories?: Subcategory[];
-  roadmaps?: Partial<Roadmap>[];
-}
-
-export interface RoadmapType {
-  id: string;
-  title: string;
   description: string;
-  categories?: Category[];
-  roadmaps?: Partial<Roadmap>[];
+  roadmaps: Partial<Roadmap>[];
 }
 
 export const aiEngineeringRoadmap: Roadmap = {
@@ -371,107 +355,51 @@ export const aiEngineeringRoadmap: Roadmap = {
   ]
 };
 
-export const roleBasedRoadmaps: RoadmapType = {
+export const roleBasedRoadmaps: Category = {
   id: 'role-based',
   title: 'Role-Based Roadmaps',
   description: 'Roadmaps designed for specific developer roles.',
   roadmaps: [
     {
       id: 'ai-engineering',
-      title: 'AI Engineering',
+      title: 'AI Engineer',
       description: 'Master Machine Learning, Deep Learning, Generative AI, and Agentic workflows.',
-      nodes: aiEngineeringRoadmap.nodes
+      nodes: aiEngineeringRoadmap.nodes // Use the actual nodes for length/details if needed
     },
-    { id: 'full-stack', title: 'Full-Stack Development', description: 'Master front-end and back-end web development.', nodes: [] },
-    { id: 'backend', title: 'Backend Engineering', description: 'Focus on server-side architecture, databases, and APIs.', nodes: [] },
-    { id: 'frontend', title: 'Frontend Engineering', description: 'Build beautiful, responsive, and accessible user interfaces.', nodes: [] },
-    { id: 'data-engineer', title: 'Data Engineering', description: 'Design, build, and manage data pipelines and infrastructure.', nodes: [] },
-    { id: 'devops-cloud', title: 'DevOps / Cloud Engineering', description: 'Automate deployments and manage cloud infrastructure.', nodes: [] },
-    { id: 'cybersecurity', title: 'Cybersecurity Engineering', description: 'Secure applications, networks, and systems from threats.', nodes: [] },
+    { id: 'full-stack', title: 'Full-Stack Developer', description: 'Master front-end and back-end web development.', nodes: [] },
+    { id: 'backend', title: 'Backend Engineer', description: 'Focus on server-side architecture, databases, and APIs.', nodes: [] },
+    { id: 'frontend', title: 'Frontend Engineer', description: 'Build beautiful, responsive, and accessible user interfaces.', nodes: [] },
+    { id: 'data-engineer', title: 'Data Engineer', description: 'Design, build, and manage data pipelines and infrastructure.', nodes: [] },
+    { id: 'devops-cloud', title: 'DevOps / Cloud Engineer', description: 'Automate deployments and manage cloud infrastructure.', nodes: [] },
+    { id: 'cybersecurity', title: 'Cybersecurity Engineer', description: 'Secure applications, networks, and systems from threats.', nodes: [] },
   ]
 };
 
-export const skillBasedRoadmaps: RoadmapType = {
+export const skillBasedRoadmaps: Category = {
   id: 'skill-based',
   title: 'Skill-Based Roadmaps',
   description: 'Learn in-demand technical skills step by step.',
-  categories: [
-    {
-      id: 'programming-data',
-      title: 'Programming / Data',
-      roadmaps: [
-        { id: 'python', title: 'Python', description: 'Master the Python programming language.', nodes: [] },
-        { id: 'javascript-typescript', title: 'JavaScript / TypeScript', description: 'Learn JS and typed JS for modern web dev.', nodes: [] },
-        { id: 'dsa', title: 'Data Structures & Algorithms', description: 'Master core CS concepts for interviews and performance.', nodes: [] },
-        { id: 'sql', title: 'SQL', description: 'Master relational databases and querying.', nodes: [] },
-      ]
-    },
-    {
-      id: 'web-development',
-      title: 'Web Development',
-      subcategories: [
-        {
-          id: 'frontend-dev',
-          title: 'Frontend Development',
-          roadmaps: []
-        },
-        {
-          id: 'backend-dev',
-          title: 'Backend Development',
-          roadmaps: []
-        },
-        {
-          id: 'api-dev',
-          title: 'API Development',
-          roadmaps: [
-            { id: 'api-development', title: 'API Development', description: 'REST, GraphQL, and gRPC.', nodes: [] }
-          ]
-        },
-        {
-          id: 'web-sec',
-          title: 'Web Security',
-          roadmaps: [
-            { id: 'web-security', title: 'Web Security', description: 'OWASP Top 10 and securing web apps.', nodes: [] }
-          ]
-        }
-      ]
-    },
-    {
-      id: 'ai-ml',
-      title: 'AI & Machine Learning',
-      roadmaps: [
-        { id: 'machine-learning', title: 'Machine Learning', description: 'Core ML concepts and algorithms.', nodes: [] },
-        { id: 'gen-ai', title: 'Generative AI', description: 'Learn Generative models and Prompt Engineering.', nodes: [] },
-        { id: 'llm-engineering', title: 'LLM Engineering', description: 'Fine-tune and deploy Large Language Models.', nodes: [] },
-        { id: 'rag', title: 'RAG', description: 'Build Retrieval-Augmented Generation systems.', nodes: [] },
-        { id: 'ai-agents', title: 'AI Agents', description: 'Build autonomous agents with LangGraph and CrewAI.', nodes: [] },
-      ]
-    },
-    {
-      id: 'devops-cloud-cat',
-      title: 'DevOps & Cloud',
-      roadmaps: [
-        { id: 'linux', title: 'Linux', description: 'Master the Linux command line.', nodes: [] },
-        { id: 'docker', title: 'Docker', description: 'Containerize your applications.', nodes: [] },
-        { id: 'cloud', title: 'Cloud', description: 'AWS, Azure, and GCP basics.', nodes: [] },
-        { id: 'git-github', title: 'Git & GitHub', description: 'Version control mastery.', nodes: [] },
-      ]
-    },
-    {
-      id: 'computer-science',
-      title: 'Computer Science',
-      roadmaps: [
-        { id: 'system-design', title: 'System Design', description: 'Design large-scale distributed systems.', nodes: [] },
-        { id: 'software-architecture', title: 'Software Architecture', description: 'Project Architecture and code structuring.', nodes: [] },
-        { id: 'db-design', title: 'Database Design', description: 'Relational and NoSQL database modeling.', nodes: [] }
-      ]
-    }
+  roadmaps: [
+    { id: 'python', title: 'Python', description: 'Master the Python programming language.', nodes: [] },
+    { id: 'javascript-typescript', title: 'JavaScript / TypeScript', description: 'Learn JS and typed JS for modern web dev.', nodes: [] },
+    { id: 'sql', title: 'SQL', description: 'Master relational databases and querying.', nodes: [] },
+    { id: 'dsa', title: 'Data Structures & Algorithms', description: 'Master core CS concepts for interviews and performance.', nodes: [] },
+    { id: 'gen-ai', title: 'Generative AI', description: 'Learn Generative models and Prompt Engineering.', nodes: [] },
+    { id: 'llm-engineering', title: 'LLM Engineering', description: 'Fine-tune and deploy Large Language Models.', nodes: [] },
+    { id: 'rag', title: 'RAG', description: 'Build Retrieval-Augmented Generation systems.', nodes: [] },
+    { id: 'ai-agents', title: 'AI Agents', description: 'Build autonomous agents with LangGraph and CrewAI.', nodes: [] },
+    { id: 'git-github', title: 'Git & GitHub', description: 'Version control mastery.', nodes: [] },
+    { id: 'linux', title: 'Linux', description: 'Master the Linux command line.', nodes: [] },
+    { id: 'docker', title: 'Docker', description: 'Containerize your applications.', nodes: [] },
+    { id: 'cloud', title: 'Cloud', description: 'AWS, Azure, and GCP basics.', nodes: [] },
+    { id: 'api-development', title: 'API Development', description: 'REST, GraphQL, and gRPC.', nodes: [] },
+    { id: 'web-security', title: 'Web Security', description: 'OWASP Top 10 and securing web apps.', nodes: [] }
   ]
 };
 
-export const absoluteBeginnerRoadmap: RoadmapType = {
+export const absoluteBeginnerRoadmap: Category = {
   id: 'absolute-beginner',
-  title: 'Absolute Beginners',
+  title: 'Absolute Beginner',
   description: 'Start your coding journey from absolute zero.',
   roadmaps: [
     { 
@@ -496,18 +424,21 @@ export const absoluteBeginnerRoadmap: RoadmapType = {
   ]
 };
 
-export const bestPracticesRoadmaps: RoadmapType = {
+export const bestPracticesRoadmaps: Category = {
   id: 'best-practices',
   title: 'Best Practices',
   description: 'Essential practices every developer should know.',
   roadmaps: [
+    { id: 'git-bp', title: 'Git & GitHub', description: '', nodes: [] },
     { id: 'clean-code', title: 'Clean Code', description: '', nodes: [] },
     { id: 'debugging', title: 'Debugging', description: '', nodes: [] },
     { id: 'testing', title: 'Testing', description: '', nodes: [] },
     { id: 'code-review', title: 'Code Review', description: '', nodes: [] },
     { id: 'documentation', title: 'Documentation', description: '', nodes: [] },
     { id: 'api-design', title: 'API Design', description: '', nodes: [] },
-    { id: 'security', title: 'Security', description: '', nodes: [] },
+    { id: 'db-design', title: 'Database Design', description: '', nodes: [] },
+    { id: 'project-arch', title: 'Project Architecture', description: '', nodes: [] },
+    { id: 'security-bp', title: 'Security', description: '', nodes: [] },
     { id: 'ci-cd', title: 'CI/CD', description: '', nodes: [] },
     { id: 'deployment', title: 'Deployment', description: '', nodes: [] },
     { id: 'production', title: 'Production Readiness', description: '', nodes: [] },
@@ -516,7 +447,7 @@ export const bestPracticesRoadmaps: RoadmapType = {
   ]
 };
 
-export const platformCategories: RoadmapType[] = [
+export const platformCategories: Category[] = [
   roleBasedRoadmaps,
   skillBasedRoadmaps,
   absoluteBeginnerRoadmap,
@@ -524,32 +455,8 @@ export const platformCategories: RoadmapType[] = [
 ];
 
 // Helper functions to get data
-export function getCategoryById(id: string): RoadmapType | undefined {
+export function getCategoryById(id: string): Category | undefined {
   return platformCategories.find(c => c.id === id);
-}
-
-export function getAllRoadmaps(): Partial<Roadmap>[] {
-  const all: Partial<Roadmap>[] = [];
-  
-  const collectRoadmaps = (roadmaps: Partial<Roadmap>[]) => {
-    roadmaps.forEach(r => all.push(r));
-  };
-  
-  platformCategories.forEach(type => {
-    if (type.roadmaps) collectRoadmaps(type.roadmaps);
-    if (type.categories) {
-      type.categories.forEach(cat => {
-        if (cat.roadmaps) collectRoadmaps(cat.roadmaps);
-        if (cat.subcategories) {
-          cat.subcategories.forEach(sub => {
-            if (sub.roadmaps) collectRoadmaps(sub.roadmaps);
-          });
-        }
-      });
-    }
-  });
-  
-  return all;
 }
 
 export function getRoadmapById(id: string): Roadmap | undefined {
@@ -559,17 +466,14 @@ export function getRoadmapById(id: string): Roadmap | undefined {
       id: 'zero-to-developer',
       title: 'ZERO → DEVELOPER',
       description: 'The ultimate path for someone who has never written code before.',
-      nodes: absoluteBeginnerRoadmap.roadmaps![0].nodes!
+      nodes: absoluteBeginnerRoadmap.roadmaps[0].nodes!
     };
   }
   // Return dummy structure for others to satisfy the UI for now
-  const all = getAllRoadmaps();
-  const found = all.find(r => r.id === id);
-  
   return {
     id,
-    title: found?.title || id.replace(/-/g, ' ').toUpperCase(),
-    description: found?.description || 'Roadmap content coming soon...',
+    title: id.replace(/-/g, ' ').toUpperCase(),
+    description: 'Roadmap content coming soon...',
     nodes: []
   };
 }

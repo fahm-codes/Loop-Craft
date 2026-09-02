@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getRoadmapById, platformCategories } from '@/data/roadmap';
+import { getRoadmapById, platformCategories, getAllRoadmaps } from '@/data/roadmap';
 import LearnView from './LearnView';
 
 export default async function LearnPage({ params }: { params: { id: string } }) {
@@ -15,10 +15,8 @@ export default async function LearnPage({ params }: { params: { id: string } }) 
 
 export function generateStaticParams() {
   const params: { id: string }[] = [];
-  platformCategories.forEach((cat: any) => {
-    cat.roadmaps.forEach((r: any) => {
-      params.push({ id: r.id });
-    });
+  getAllRoadmaps().forEach((r: any) => {
+    if (r.id) params.push({ id: r.id });
   });
   return params;
 }

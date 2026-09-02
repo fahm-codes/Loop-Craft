@@ -15,7 +15,21 @@ export default function RoadmapsIndexPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {platformCategories.map((category) => (
+          {platformCategories.map((category) => {
+            let count = 0;
+            if (category.roadmaps) count += category.roadmaps.length;
+            if (category.categories) {
+              category.categories.forEach(cat => {
+                if (cat.roadmaps) count += cat.roadmaps.length;
+                if (cat.subcategories) {
+                  cat.subcategories.forEach(sub => {
+                    if (sub.roadmaps) count += sub.roadmaps.length;
+                  });
+                }
+              });
+            }
+
+            return (
             <Link 
               href={`/roadmaps/${category.id}`} 
               key={category.id}
@@ -34,7 +48,7 @@ export default function RoadmapsIndexPage() {
               
               <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between text-xs font-mono text-text-muted border-t border-border-main pt-4">
-                  <span>{category.roadmaps.length} Roadmaps Available</span>
+                  <span>{count} Roadmaps Available</span>
                 </div>
                 
                 <div className="flex items-center justify-between text-accent font-mono text-xs font-bold mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -43,7 +57,8 @@ export default function RoadmapsIndexPage() {
                 </div>
               </div>
             </Link>
-          ))}
+            );
+          })}
         </div>
       </main>
     </div>
