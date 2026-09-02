@@ -3,13 +3,6 @@ export interface GroupMember {
   displayName: string;
   role: 'OWNER' | 'MEMBER';
   joinedAt: string;
-  // For the local version, we mock other users' progress.
-  // In production, this would be computed by querying their actual enrollment/completion state.
-  mockProgress?: {
-    progressPercent: number;
-    status: 'ON TRACK' | 'BEHIND' | 'COMPLETED';
-    currentModuleTitle: string;
-  };
 }
 
 export interface GroupMilestone {
@@ -97,15 +90,13 @@ export const groupService = {
           id: 'mock-user-1',
           displayName: 'Alex',
           role: 'MEMBER',
-          joinedAt: new Date().toISOString(),
-          mockProgress: { progressPercent: 45, status: 'ON TRACK', currentModuleTitle: 'Building with LLMs' }
+          joinedAt: new Date().toISOString()
         },
         {
           id: 'mock-user-2',
           displayName: 'Sam',
           role: 'MEMBER',
-          joinedAt: new Date().toISOString(),
-          mockProgress: { progressPercent: 20, status: 'BEHIND', currentModuleTitle: 'Python Fundamentals' }
+          joinedAt: new Date().toISOString()
         }
       ],
       milestones: []

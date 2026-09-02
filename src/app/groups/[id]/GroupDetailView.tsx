@@ -93,17 +93,9 @@ export default function GroupDetailView({ groupId }: { groupId: string }) {
   const myStatus = myProgressPercent === 100 ? 'COMPLETED' : missedTasks.length > 0 ? 'BEHIND' : 'ON TRACK';
   const myActiveNode = mySchedule.find(s => !s.isCompleted)?.node?.title || 'Completed';
 
-  // Calculate Group Average Progress
-  let totalProgress = myProgressPercent;
-  let membersCount = 1;
-  group.members.forEach(m => {
-    if (m.id !== userId && m.mockProgress) {
-      totalProgress += m.mockProgress.progressPercent;
-      membersCount++;
-    }
-  });
-  const groupAvgProgress = Math.round(totalProgress / membersCount);
-
+  // Remove Group Average Progress since we cannot access others' real data yet
+  // Once the DB is integrated, this will be calculated from real shared state
+  
   return (
     <div className="min-h-[calc(100vh-64px)] bg-bg-main p-6 md:p-12 lg:p-16">
       <div className="max-w-6xl mx-auto space-y-12">
@@ -153,16 +145,16 @@ export default function GroupDetailView({ groupId }: { groupId: string }) {
                   <Users size={14} /> Group Members ({group.members.length}/5)
                 </div>
                 <div className="font-mono text-[11px] text-text-secondary">
-                  Avg Progress: <span className="text-text-primary font-bold">{groupAvgProgress}%</span>
+                  Avg Progress: <span className="text-text-primary font-bold">Awaiting Sync</span>
                 </div>
               </div>
 
               <div className="space-y-4">
                 {group.members.map(member => {
                   const isMe = member.id === userId;
-                  const progress = isMe ? myProgressPercent : member.mockProgress?.progressPercent || 0;
-                  const status = isMe ? myStatus : member.mockProgress?.status || 'ON TRACK';
-                  const activeMod = isMe ? myActiveNode : member.mockProgress?.currentModuleTitle || 'Starting...';
+                  const progress = isMe ? myProgressPercent : 0;
+                  const status = isMe ? myStatus : 'UNAVAILABLE';
+                  const activeMod = isMe ? myActiveNode : 'Progress unavailable';
 
                   return (
                     <div key={member.id} className="border border-border-main bg-bg-main p-4 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
@@ -176,17 +168,17 @@ export default function GroupDetailView({ groupId }: { groupId: string }) {
                             {isMe && <span className="bg-accent/20 text-accent px-2 py-0.5 text-[9px] uppercase tracking-widest font-mono">You</span>}
                             {member.role === 'OWNER' && <span className="bg-border-main text-text-secondary px-2 py-0.5 text-[9px] uppercase tracking-widest font-mono">Owner</span>}
                           </div>
-                          <div className="font-mono text-[11px] text-text-muted mt-1 truncate max-w-[200px]">
+                          <div className={`font-mono text-[11px] mt-1 truncate max-w-[200px] ${!isMe ? 'text-text-muted/60 italic' : 'text-text-muted'}`}>
                             {activeMod}
                           </div>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-6 w-full md:w-auto">
-                        <div className="flex-1 md:w-32">
+                        <div className={`flex-1 md:w-32 ${!isMe ? 'opacity-30' : ''}`}>
                           <div className="flex justify-between font-mono text-[10px] mb-1">
                             <span className="text-text-muted">Progress</span>
-                            <span className="text-text-primary">{progress}%</span>
+                            <span className="text-text-primary">{isMe ? `${progress}%` : '--'}</span>
                           </div>
                           <div className="h-1.5 w-full bg-bg-panel overflow-hidden">
                             <div className="h-full bg-accent" style={{ width: `${progress}%` }}></div>
@@ -196,10 +188,12 @@ export default function GroupDetailView({ groupId }: { groupId: string }) {
                         <div className={`font-mono text-[10px] uppercase tracking-widest px-3 py-1 border flex items-center gap-1 w-28 justify-center
                           ${status === 'ON TRACK' ? 'border-success text-success bg-success/10' : 
                             status === 'BEHIND' ? 'border-error text-error bg-error/10' : 
+                            status === 'UNAVAILABLE' ? 'border-border-main text-text-muted bg-bg-panel' :
                             'border-accent text-accent bg-accent/10'}
                         `}>
                           {status === 'BEHIND' && <AlertTriangle size={12} />}
                           {status === 'ON TRACK' && <CheckCircle size={12} />}
+                          {status === 'UNAVAILABLE' && <Clock size={12} />}
                           {status}
                         </div>
 
