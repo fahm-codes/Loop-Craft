@@ -7,8 +7,8 @@ export async function updateSession(request: NextRequest) {
   })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://missing-project-url.supabase.co',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'missing-anon-key',
     {
       cookies: {
         getAll() {
@@ -27,8 +27,12 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  // Refresh session if expired
-  await supabase.auth.getUser()
+  try {
+    // Refresh session if expired
+    await supabase.auth.getUser()
+  } catch (error) {
+    // Ignore fetch errors if Supabase is not configured
+  }
 
   return supabaseResponse
 }
