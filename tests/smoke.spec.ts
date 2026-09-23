@@ -6,7 +6,7 @@ const ROUTES = [
   '/dashboard',
   '/groups',
   '/roadmap/ai-engineering',
-  '/roadmap/full-stack',
+  '/roadmap/full-stack', '/about',
 ];
 
 test.describe('Smoke Tests & Responsiveness', () => {

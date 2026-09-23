@@ -22,7 +22,7 @@ export default async function ProfilePage() {
   return (
     <main className="flex-grow w-full max-w-4xl mx-auto px-6 py-12">
       <div className="mb-10">
-        <h1 className="text-3xl font-sans font-bold text-text-primary mb-2">My Profile</h1>
+        <h1 className="text-3xl font-display font-bold text-text-primary mb-2">My Profile</h1>
         <p className="text-text-secondary font-mono text-sm">Manage your personal information and learning progress.</p>
       </div>
 
@@ -46,7 +46,7 @@ export default async function ProfilePage() {
           </div>
 
           <div className="bg-bg-sec border border-border-main rounded-md overflow-hidden">
-            <button className="w-full text-left px-6 py-4 border-b border-border-main text-accent bg-[#6385f00a] font-mono text-sm flex items-center gap-3">
+            <button className="w-full text-left px-6 py-4 border-b border-border-main text-accent bg-accent-soft font-mono text-sm flex items-center gap-3">
               <User size={16} /> Personal Info
             </button>
             <button className="w-full text-left px-6 py-4 border-b border-border-main text-text-secondary hover:text-text-primary transition-colors font-mono text-sm flex items-center gap-3">

@@ -21,34 +21,35 @@ test.describe('Theme Tests', () => {
     });
 
     // Check light tokens based on requested spec
-    expect(lightStyles.accent.toLowerCase()).toBe('#38ce3c');
-    expect(lightStyles.bgMain.toLowerCase()).toBe('#f7f9fc');
-    expect(lightStyles.error.toLowerCase()).toBe('#ff4d6b');
-    expect(lightStyles.warning.toLowerCase()).toBe('#ffde73');
+    expect(lightStyles.accent.toLowerCase()).toBe('#3553ff');
+    expect(lightStyles.bgMain.toLowerCase()).toBe('#fafaf5');
+    expect(lightStyles.error.toLowerCase()).toBe('#b05555');
+    expect(lightStyles.warning.toLowerCase()).toBe('#c69a55');
 
     // Switch to Dark Mode
     await page.evaluate(() => {
-      document.documentElement.classList.add('dark-theme');
       document.documentElement.classList.remove('light-theme');
+      document.documentElement.classList.add('dark-theme');
     });
 
     const darkStyles = await page.evaluate(() => {
-      const computed = getComputedStyle(document.documentElement);
+      const root = document.querySelector('.dark-theme') as HTMLElement;
+      const computed = getComputedStyle(root);
       return {
         accent: computed.getPropertyValue('--app-accent').trim(),
         bgMain: computed.getPropertyValue('--app-bg-main').trim(),
         success: computed.getPropertyValue('--app-success').trim(),
         blue: computed.getPropertyValue('--app-blue').trim(),
-        info: computed.getPropertyValue('--app-info').trim(),
+        info: computed.getPropertyValue('--app-info').trim()
       };
     });
 
     // Check dark tokens based on requested spec
-    expect(darkStyles.accent.toLowerCase()).toBe('#af1763');
-    expect(darkStyles.bgMain.toLowerCase()).toBe('#191c24');
-    expect(darkStyles.success.toLowerCase()).toBe('#198754');
-    expect(darkStyles.blue.toLowerCase()).toBe('#0d6efd');
-    expect(darkStyles.info.toLowerCase()).toBe('#0dcaf0');
+    expect(darkStyles.accent.toLowerCase()).toBe('#6b8eff');
+    expect(darkStyles.bgMain.toLowerCase()).toBe('#0a0d1a');
+    expect(darkStyles.success.toLowerCase()).toBe('#4f7057');
+    expect(darkStyles.blue.toLowerCase()).toBe('#6b8eff');
+    expect(darkStyles.info.toLowerCase()).toBe('#6b8eff');
   });
 
   test('Theme persists across reload', async ({ page }) => {
@@ -63,8 +64,7 @@ test.describe('Theme Tests', () => {
     // Reload so script in head picks it up
     await page.reload();
     
-    let isDark = await page.evaluate(() => document.documentElement.classList.contains('dark-theme'));
-    expect(isDark).toBe(true);
+    await expect(page.locator('html')).toHaveClass(/dark-theme/);
 
     // Click the theme toggle in Navbar if available (Navbar exists on /)
     // We can also just set it via our ThemeProvider logic, but simulating toggle is better
@@ -79,7 +79,6 @@ test.describe('Theme Tests', () => {
     });
     await page.reload();
 
-    let isLight = await page.evaluate(() => document.documentElement.classList.contains('light-theme'));
-    expect(isLight).toBe(true);
+    await expect(page.locator('html')).toHaveClass(/light-theme/);
   });
 });

@@ -6,6 +6,11 @@ import Link from 'next/link';
 import { CheckCircle, PlayCircle, BookOpen, FileText, Code2, MonitorPlay, ListChecks, Target, ChevronLeft, ChevronRight, Check, Menu, X, AlertTriangle } from 'lucide-react';
 import { generateSchedule } from '@/utils/schedule';
 
+export interface AssignmentSubmission {
+  url: string;
+  submittedAt: string;
+}
+
 const safeSetItem = (key: string, value: string) => {
   try {
     localStorage.setItem(key, value);
@@ -21,6 +26,8 @@ export default function LearnView({ category }: { category: Roadmap }) {
   
   const [completedAssignments, setCompletedAssignments] = useState<Record<string, string[]>>({});
   const [reviewedTopics, setReviewedTopics] = useState<Record<string, string[]>>({});
+  const [submissions, setSubmissions] = useState<Record<string, Record<string, AssignmentSubmission>>>({});
+  const [draftUrls, setDraftUrls] = useState<Record<string, string>>({});
 
   const [viewMode, setViewMode] = useState<'overview' | 'lesson'>('overview');
   const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
@@ -46,6 +53,9 @@ export default function LearnView({ category }: { category: Roadmap }) {
 
       const savedTopics = localStorage.getItem(`loopcraft-topics-${category.id}`);
       if (savedTopics) setReviewedTopics(JSON.parse(savedTopics));
+
+      const savedSubmissions = localStorage.getItem(`loopcraft-submissions-${category.id}`);
+      if (savedSubmissions) setSubmissions(JSON.parse(savedSubmissions));
     } catch (e) {
       console.warn('Failed to load from localStorage', e);
     }
@@ -105,9 +115,34 @@ export default function LearnView({ category }: { category: Roadmap }) {
   const assignments = activeNode?.resources?.filter(r => r.type === 'assignment') || [];
 
   if (!activeNode) {
+      if (category.id !== 'ai-engineering') {
     return (
+      <div className="w-full flex flex-col items-center justify-center h-full px-4 py-20 bg-bg-main">
+        <div className="border border-border-main bg-bg-sec p-10 md:p-16 max-w-2xl w-full text-center relative overflow-hidden flex flex-col items-center">
+          <div className="font-mono text-xs tracking-widest text-text-muted mb-8 uppercase border-b border-border-main pb-4 inline-block px-8">
+            STATUS: UPCOMING
+          </div>
+          <h1 className="text-4xl md:text-5xl font-display font-normal text-text-primary mb-6 uppercase tracking-tight">
+            {category.title}
+          </h1>
+          <p className="text-base text-text-secondary mb-10 max-w-lg font-serif leading-relaxed">
+            This roadmap is currently being prepared for the LoopCraft learning library. We are building it carefully so that every roadmap provides a complete, practical learning experience.
+          </p>
+          <div className="font-mono text-xs tracking-[0.2em] text-accent border border-accent bg-accent/5 px-6 py-3 uppercase">
+            COMING SOON
+          </div>
+          
+          <Link href="/roadmaps" className="mt-12 text-sm font-mono text-text-muted hover:text-text-primary transition-colors inline-flex items-center gap-2">
+            &larr; BACK TO ROADMAPS
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
       <div className="w-full min-h-screen bg-bg-main flex flex-col items-center justify-center border-t border-border-main p-8 text-center">
-        <h1 className="text-2xl font-sans text-text-primary mb-4">Content Coming Soon</h1>
+        <h1 className="text-2xl font-display text-text-primary mb-4">Content Coming Soon</h1>
         <p className="text-text-secondary mb-8">This roadmap is currently being populated with modules.</p>
         <Link href={`/roadmap/${category.id}`} className="border border-accent text-accent px-6 py-3 font-mono text-sm tracking-widest uppercase hover:bg-accent hover:text-bg-main transition-colors">
           &larr; Back to Roadmap
@@ -134,7 +169,7 @@ export default function LearnView({ category }: { category: Roadmap }) {
           <Link href={`/roadmap/${category.id}`} className="text-text-muted hover:text-text-primary text-[11px] font-mono tracking-widest uppercase mb-4 block">
             &larr; Back to Roadmap
           </Link>
-          <h2 className="text-xl font-sans font-bold text-text-primary uppercase leading-tight">
+          <h2 className="text-xl font-display font-bold text-text-primary uppercase leading-tight">
             {category.title}
           </h2>
         </div>
@@ -156,7 +191,7 @@ export default function LearnView({ category }: { category: Roadmap }) {
                   }}
                   className={`text-left p-4 border transition-all relative ${
                     activeNodeId === node.id 
-                      ? 'border-accent bg-[#6385f015] shadow-[inset_4px_0_0_var(--color-accent)]' 
+                      ? 'border-accent bg-accent-soft shadow-[inset_4px_0_0_var(--color-accent)]' 
                       : 'border-border-main bg-bg-main hover:border-text-muted hover:bg-bg-panel'
                   }`}
                 >
@@ -167,7 +202,7 @@ export default function LearnView({ category }: { category: Roadmap }) {
                     {isCompleted && <CheckCircle size={14} className="text-success" />}
                     {isMissed && <AlertTriangle size={14} className="text-error" />}
                   </div>
-                  <strong className={`font-sans text-[13px] block mb-2 leading-snug ${isCompleted ? 'text-text-muted' : isMissed ? 'text-error' : 'text-text-primary'}`}>
+                  <strong className={`font-serif text-[13px] block mb-2 leading-snug ${isCompleted ? 'text-text-muted' : isMissed ? 'text-error' : 'text-text-primary'}`}>
                     {node.title}
                   </strong>
                   
@@ -184,7 +219,7 @@ export default function LearnView({ category }: { category: Roadmap }) {
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 p-6 md:p-12 lg:p-16 overflow-y-auto relative">
+      <main className="flex-1 p-6 md:p-6 md:p-12 lg:p-16 overflow-y-auto relative">
         <div className={`max-w-4xl mx-auto transition-opacity duration-300 ${!isMounted ? 'opacity-0' : 'opacity-100'}`}>
           
           {selectedResource ? (
@@ -201,7 +236,7 @@ export default function LearnView({ category }: { category: Roadmap }) {
                 <div className="font-mono text-[10px] uppercase text-text-muted mb-4 tracking-widest flex items-center gap-2">
                   <FileText size={14}/> Reading Material
                 </div>
-                <h2 className="text-2xl font-sans text-text-primary mb-8">{selectedResource.title}</h2>
+                <h2 className="text-2xl font-display text-text-primary mb-8">{selectedResource.title}</h2>
                 
                 <div className="prose prose-invert max-w-none text-text-secondary font-serif leading-relaxed space-y-6">
                   {selectedResource.content ? (
@@ -210,7 +245,7 @@ export default function LearnView({ category }: { category: Roadmap }) {
                     <>
                       <p>This is a native reading view for text materials and assignments.</p>
                       <div className="p-6 border-l-2 border-accent bg-bg-main mt-8">
-                        <p className="font-sans text-sm text-text-muted mb-2 uppercase tracking-widest">System Message</p>
+                        <p className="font-serif text-sm text-text-muted mb-2 uppercase tracking-widest">System Message</p>
                         <p className="m-0">No direct text content provided for this resource.</p>
                       </div>
                     </>
@@ -239,7 +274,7 @@ export default function LearnView({ category }: { category: Roadmap }) {
                 )}
               </div>
 
-              <h1 className="text-3xl md:text-5xl font-sans font-normal text-text-primary mb-8 uppercase tracking-tight">
+              <h1 className="text-3xl md:text-5xl font-display font-normal text-text-primary mb-8 uppercase tracking-tight">
                 {activeNode?.title}
               </h1>
 
@@ -251,18 +286,18 @@ export default function LearnView({ category }: { category: Roadmap }) {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
                 <div className="border border-border-main p-6 bg-bg-main">
-                  <h3 className="font-mono text-[11px] uppercase tracking-widest text-text-muted mb-4 flex items-center gap-2">
+                  <h3 className="font-display text-[11px] uppercase tracking-widest text-text-muted mb-4 flex items-center gap-2">
                     <Target size={16} /> Learning Objectives
                   </h3>
-                  <div className="text-2xl font-sans font-bold text-text-primary">
+                  <div className="text-2xl font-serif font-bold text-text-primary">
                     {activeNode.topics.length} <span className="text-sm font-normal text-text-muted">Topics</span>
                   </div>
                 </div>
                 <div className="border border-border-main p-6 bg-bg-main">
-                  <h3 className="font-mono text-[11px] uppercase tracking-widest text-text-muted mb-4 flex items-center gap-2">
+                  <h3 className="font-display text-[11px] uppercase tracking-widest text-text-muted mb-4 flex items-center gap-2">
                     <BookOpen size={16} /> Learning Materials
                   </h3>
-                  <div className="text-2xl font-sans font-bold text-text-primary">
+                  <div className="text-2xl font-serif font-bold text-text-primary">
                     {activeNode.resources.length} <span className="text-sm font-normal text-text-muted">Resources</span>
                   </div>
                 </div>
@@ -271,7 +306,7 @@ export default function LearnView({ category }: { category: Roadmap }) {
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center py-12 border-t border-border-main">
                  <button 
                     onClick={() => setViewMode('lesson')}
-                    className="w-full sm:w-auto border border-accent bg-accent text-bg-main px-12 py-4 hover:opacity-90 font-mono text-[13px] font-bold uppercase tracking-widest transition-opacity flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(99,133,240,0.3)]"
+                    className="w-full sm:w-auto border border-accent bg-accent text-bg-main px-6 py-3 md:px-12 md:py-4 hover:opacity-90 font-mono text-[13px] font-bold uppercase tracking-widest transition-opacity flex items-center justify-center gap-3 "
                  >
                    <PlayCircle size={20} /> {activeNode?.id && isMounted && completedNodes[activeNode.id] ? 'Review Lesson' : 'Start Lesson'}
                  </button>
@@ -292,7 +327,7 @@ export default function LearnView({ category }: { category: Roadmap }) {
                 <span>{activeNodeIndex + 1} / {category.nodes.length}</span>
               </div>
               
-              <h1 className="text-3xl md:text-4xl font-sans text-text-primary mb-12">
+              <h1 className="text-3xl md:text-4xl font-display text-text-primary mb-12">
                 {activeNode.title}
               </h1>
 
@@ -300,7 +335,7 @@ export default function LearnView({ category }: { category: Roadmap }) {
                 
                 {/* 1. INTRODUCTION */}
                 <section>
-                  <h2 className="font-mono text-[13px] uppercase tracking-widest text-text-primary mb-6 flex items-center gap-3 border-b border-border-main pb-4">
+                  <h2 className="font-display text-[13px] uppercase tracking-widest text-text-primary mb-6 flex items-center gap-3 border-b border-border-main pb-4">
                     <BookOpen size={18} className="text-accent" /> 1. Introduction & Objectives
                   </h2>
                   <p className="text-[15px] text-text-secondary font-serif leading-relaxed mb-6">
@@ -310,7 +345,7 @@ export default function LearnView({ category }: { category: Roadmap }) {
                     <strong className="block font-mono text-[11px] uppercase tracking-widest text-text-muted mb-4">Core Topics to Master:</strong>
                     <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {activeNode.topics.map((topic, i) => (
-                        <li key={i} className="flex items-start gap-3 text-text-secondary text-sm font-sans">
+                        <li key={i} className="flex items-start gap-3 text-text-secondary text-sm font-serif">
                           <span className="text-accent mt-1">&#9632;</span>
                           {topic}
                         </li>
@@ -322,16 +357,16 @@ export default function LearnView({ category }: { category: Roadmap }) {
                 {/* 2. READING / ARTICLES */}
                 {articles.length > 0 && (
                   <section>
-                    <h2 className="font-mono text-[13px] uppercase tracking-widest text-text-primary mb-6 flex items-center gap-3 border-b border-border-main pb-4">
+                    <h2 className="font-display text-[13px] uppercase tracking-widest text-text-primary mb-6 flex items-center gap-3 border-b border-border-main pb-4">
                       <FileText size={18} className="text-accent" /> 2. Required Reading
                     </h2>
                     <div className="grid grid-cols-1 gap-4">
                       {articles.map((res, i) => {
                         const isExternal = res.url.includes('http');
                         return (
-                          <div key={i} className="flex items-start gap-4 p-5 border border-border-main bg-bg-sec hover:border-accent hover:bg-[#6385f005] transition-all group cursor-pointer" onClick={() => isExternal ? window.open(res.url, '_blank') : setSelectedResource(res)}>
+                          <div key={i} className="flex items-start gap-4 p-5 border border-border-main bg-bg-sec hover:border-accent hover:bg-accent-soft transition-all group cursor-pointer" onClick={() => isExternal ? window.open(res.url, '_blank') : setSelectedResource(res)}>
                             <div className="flex-1">
-                              <strong className="font-sans text-[15px] block mb-2 text-text-primary group-hover:text-accent transition-colors">{res.title}</strong>
+                              <strong className="font-display text-xl block mb-2 text-text-primary group-hover:text-accent transition-colors">{res.title}</strong>
                               <span className="font-mono text-[11px] text-text-muted break-all">{isExternal ? res.url : 'Read in workspace'}</span>
                             </div>
                             <ChevronRight size={18} className="text-text-muted group-hover:text-accent" />
@@ -345,14 +380,14 @@ export default function LearnView({ category }: { category: Roadmap }) {
                 {/* 3. DOCUMENTATION / COURSES */}
                 {docs.length > 0 && (
                   <section>
-                    <h2 className="font-mono text-[13px] uppercase tracking-widest text-text-primary mb-6 flex items-center gap-3 border-b border-border-main pb-4">
+                    <h2 className="font-display text-[13px] uppercase tracking-widest text-text-primary mb-6 flex items-center gap-3 border-b border-border-main pb-4">
                       <BookOpen size={18} className="text-success" /> 3. Reference & Documentation
                     </h2>
                     <div className="grid grid-cols-1 gap-4">
                       {docs.map((res, i) => (
-                        <a key={i} href={res.url} target="_blank" rel="noreferrer" className="flex items-start gap-4 p-5 border border-border-main bg-bg-sec hover:border-success hover:bg-[#22c55e05] transition-all group">
+                        <a key={i} href={res.url} target="_blank" rel="noreferrer" className="flex items-start gap-4 p-5 border border-border-main bg-bg-sec hover:border-success hover:bg-bg-hover transition-all group">
                           <div className="flex-1">
-                            <strong className="font-sans text-[15px] block mb-2 text-text-primary group-hover:text-success transition-colors">{res.title}</strong>
+                            <strong className="font-display text-xl block mb-2 text-text-primary group-hover:text-success transition-colors">{res.title}</strong>
                             <span className="font-mono text-[11px] text-text-muted break-all">{res.url}</span>
                           </div>
                           <ChevronRight size={18} className="text-text-muted group-hover:text-success" />
@@ -365,17 +400,17 @@ export default function LearnView({ category }: { category: Roadmap }) {
                 {/* 4. YOUTUBE / VIDEO */}
                 {videos.length > 0 && (
                   <section>
-                    <h2 className="font-mono text-[13px] uppercase tracking-widest text-text-primary mb-6 flex items-center gap-3 border-b border-border-main pb-4">
-                      <MonitorPlay size={18} className="text-[#ff0000]" /> 4. Video Lectures
+                    <h2 className="font-display text-[13px] uppercase tracking-widest text-text-primary mb-6 flex items-center gap-3 border-b border-border-main pb-4">
+                      <MonitorPlay size={18} className="text-text-primary" /> 4. Video Lectures
                     </h2>
                     <div className="grid grid-cols-1 gap-4">
                       {videos.map((res, i) => (
-                        <a key={i} href={res.url} target="_blank" rel="noreferrer" className="flex items-start gap-4 p-5 border border-border-main bg-bg-sec hover:border-[#ff0000] hover:bg-[#ff000005] transition-all group">
+                        <a key={i} href={res.url} target="_blank" rel="noreferrer" className="flex items-start gap-4 p-5 border border-border-main bg-bg-sec hover:border-accent hover:bg-bg-hover transition-all group">
                           <div className="flex-1">
-                            <strong className="font-sans text-[15px] block mb-2 text-text-primary group-hover:text-[#ff0000] transition-colors">{res.title}</strong>
+                            <strong className="font-display text-xl block mb-2 text-text-primary group-hover:text-text-primary transition-colors">{res.title}</strong>
                             <span className="font-mono text-[11px] text-text-muted break-all">{res.url}</span>
                           </div>
-                          <PlayCircle size={18} className="text-text-muted group-hover:text-[#ff0000]" />
+                          <PlayCircle size={18} className="text-text-muted group-hover:text-text-primary" />
                         </a>
                       ))}
                     </div>
@@ -385,26 +420,30 @@ export default function LearnView({ category }: { category: Roadmap }) {
                 {/* 5. PRACTICE / ASSIGNMENT */}
                 {assignments.length > 0 ? (
                   <section>
-                    <h2 className="font-mono text-[13px] uppercase tracking-widest text-text-primary mb-6 flex items-center gap-3 border-b border-border-main pb-4">
+                    <h2 className="font-display text-[13px] uppercase tracking-widest text-text-primary mb-6 flex items-center gap-3 border-b border-border-main pb-4">
                       <Code2 size={18} className="text-error" /> 5. Practice & Assignments
                     </h2>
                     <div className="grid grid-cols-1 gap-4">
                       {assignments.map((res, i) => {
                         const isCompleted = isMounted && (completedAssignments[activeNode.id] || []).includes(res.title);
                         const isExternal = res.url.includes('http');
+                        const submission = (isMounted && submissions[activeNode.id]) ? submissions[activeNode.id][res.title] : null;
+                        const draftUrl = draftUrls[`${activeNode.id}-${res.title}`] || '';
+                        
                         return (
-                          <div key={i} className={`flex flex-col sm:flex-row sm:items-start gap-4 p-6 border transition-all relative overflow-hidden ${isCompleted ? 'border-success bg-[#22c55e05]' : 'border-error bg-[#ff4d4f05]'}`}>
+                          <div key={i} className={`flex flex-col sm:flex-row sm:items-start gap-4 p-6 border transition-all relative overflow-hidden ${isCompleted ? 'border-success bg-bg-hover' : 'border-error bg-bg-hover'}`}>
                             <div className={`absolute top-0 left-0 w-1 h-full ${isCompleted ? 'bg-success' : 'bg-error'}`}></div>
                             
                             <button 
                               onClick={() => toggleAssignment(activeNode.id, res.title)} 
-                              className={`shrink-0 mt-1 flex items-center justify-center w-6 h-6 border rounded-sm transition-colors ${isCompleted ? 'bg-success border-success text-bg-main' : 'border-error text-transparent hover:bg-[#ff4d4f20]'}`}
+                              className={`shrink-0 mt-1 flex items-center justify-center w-6 h-6 border rounded-sm transition-colors ${isCompleted ? 'bg-success border-success text-bg-main' : 'border-error text-transparent hover:bg-bg-hover'}`}
+                              title={isCompleted ? "Mark incomplete" : "Mark complete"}
                             >
                               <Check size={14} />
                             </button>
 
-                            <div className="flex-1">
-                              <strong className={`font-sans text-[16px] block mb-2 ${isCompleted ? 'text-success' : 'text-error'}`}>{res.title}</strong>
+                            <div className="flex-1 w-full">
+                              <strong className={`font-display text-xl block mb-2 ${isCompleted ? 'text-success' : 'text-error'}`}>{res.title}</strong>
                               
                               {isExternal ? (
                                 <a href={res.url} target="_blank" rel="noreferrer" className="font-mono text-[12px] text-text-muted break-all block mb-4 hover:text-text-primary hover:underline">{res.url}</a>
@@ -415,6 +454,76 @@ export default function LearnView({ category }: { category: Roadmap }) {
                               <button onClick={() => isExternal ? window.open(res.url, '_blank') : setSelectedResource(res)} className="font-mono text-[10px] uppercase tracking-widest text-text-primary bg-bg-main px-3 py-1.5 border border-border-main inline-block hover:border-text-muted transition-colors">
                                 {isExternal ? 'Open External Assignment' : 'Open Local Assignment'} &rarr;
                               </button>
+
+                              <div className="mt-4 pt-4 border-t border-border-main">
+                                {submission ? (
+                                  <div className="flex flex-col gap-2">
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-mono text-[10px] uppercase tracking-widest text-bg-main bg-success px-2 py-0.5 rounded-sm font-bold">Submitted</span>
+                                      <span className="text-text-muted text-[11px] font-mono">{new Date(submission.submittedAt).toLocaleDateString()}</span>
+                                    </div>
+                                    <a href={submission.url} target="_blank" rel="noreferrer" className="text-[13px] text-blue hover:underline break-all mb-2 inline-block">
+                                      {submission.url}
+                                    </a>
+                                    <button 
+                                      onClick={() => {
+                                        const updated = { ...submissions };
+                                        if (updated[activeNode.id]) {
+                                          delete updated[activeNode.id][res.title];
+                                          setSubmissions(updated);
+                                          safeSetItem(`loopcraft-submissions-${category.id}`, JSON.stringify(updated));
+                                        }
+                                        setDraftUrls(prev => ({...prev, [`${activeNode.id}-${res.title}`]: submission.url}));
+                                      }}
+                                      className="font-mono text-[10px] uppercase tracking-widest text-text-secondary hover:text-text-primary self-start underline underline-offset-4"
+                                    >
+                                      Edit URL
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div className="flex flex-col gap-2 w-full max-w-md">
+                                    {isCompleted && (
+                                      <div className="mb-1">
+                                        <span className="font-mono text-[10px] uppercase tracking-widest text-text-muted">Completed — No project link provided</span>
+                                      </div>
+                                    )}
+                                    <label className="font-mono text-[10px] uppercase tracking-widest text-text-secondary block mb-1">
+                                      {isCompleted ? 'Add Project URL (Optional)' : 'Submit Project URL (Optional)'}
+                                    </label>
+                                    <div className="flex flex-col sm:flex-row gap-2">
+                                      <input 
+                                        type="url"
+                                        value={draftUrl}
+                                        onChange={(e) => setDraftUrls(prev => ({...prev, [`${activeNode.id}-${res.title}`]: e.target.value}))}
+                                        placeholder="https://github.com/..."
+                                        className="flex-1 bg-bg-main border border-border-main px-3 py-2 text-sm text-text-primary font-mono focus:outline-none focus:border-accent"
+                                      />
+                                      <button 
+                                        onClick={() => {
+                                          const url = draftUrl.trim();
+                                          if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+                                            const updated = { ...submissions };
+                                            if (!updated[activeNode.id]) updated[activeNode.id] = {};
+                                            updated[activeNode.id][res.title] = { url, submittedAt: new Date().toISOString() };
+                                            setSubmissions(updated);
+                                            safeSetItem(`loopcraft-submissions-${category.id}`, JSON.stringify(updated));
+                                            setDraftUrls(prev => {
+                                              const next = {...prev};
+                                              delete next[`${activeNode.id}-${res.title}`];
+                                              return next;
+                                            });
+                                          } else {
+                                            alert('Please enter a valid URL starting with http:// or https://');
+                                          }
+                                        }}
+                                        className="bg-bg-sec border border-border-main hover:border-accent hover:text-accent px-4 py-2 font-mono text-[11px] uppercase tracking-widest transition-colors shrink-0"
+                                      >
+                                        Submit
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
                         );
@@ -423,20 +532,20 @@ export default function LearnView({ category }: { category: Roadmap }) {
                   </section>
                 ) : (
                   <section>
-                    <h2 className="font-mono text-[13px] uppercase tracking-widest text-text-primary mb-6 flex items-center gap-3 border-b border-border-main pb-4">
+                    <h2 className="font-display text-[13px] uppercase tracking-widest text-text-primary mb-6 flex items-center gap-3 border-b border-border-main pb-4">
                       <Code2 size={18} className="text-text-muted" /> 5. Practice & Assignments
                     </h2>
-                    <div className="p-8 border border-dashed border-border-main flex flex-col items-center justify-center text-center text-text-muted bg-[#ffffff02]">
+                    <div className="p-8 border border-dashed border-border-main flex flex-col items-center justify-center text-center text-text-muted bg-bg-sec">
                       <Code2 size={32} className="mb-4 opacity-50" />
                       <p className="font-mono text-[11px] uppercase tracking-widest mb-2">No active assignments</p>
-                      <p className="text-sm font-sans">Practice materials for this module are coming soon.</p>
+                      <p className="text-sm font-serif">Practice materials for this module are coming soon.</p>
                     </div>
                   </section>
                 )}
 
                 {/* 6. REVIEW / QUIZ */}
                 <section>
-                  <h2 className="font-mono text-[13px] uppercase tracking-widest text-text-primary mb-6 flex items-center gap-3 border-b border-border-main pb-4">
+                  <h2 className="font-display text-[13px] uppercase tracking-widest text-text-primary mb-6 flex items-center gap-3 border-b border-border-main pb-4">
                     <ListChecks size={18} className="text-accent" /> 6. Self-Review Checklist
                   </h2>
                   <div className="p-8 border border-border-main bg-bg-sec">
@@ -450,12 +559,12 @@ export default function LearnView({ category }: { category: Roadmap }) {
                           <button 
                             key={i}
                             onClick={() => toggleTopic(activeNode.id, topic)}
-                            className={`flex items-start text-left gap-4 p-4 border transition-colors ${isReviewed ? 'border-accent bg-[#6385f008]' : 'border-border-main bg-bg-main hover:border-text-muted'}`}
+                            className={`flex items-start text-left gap-4 p-4 border transition-colors ${isReviewed ? 'border-accent bg-accent-soft' : 'border-border-main bg-bg-main hover:border-text-muted'}`}
                           >
                             <div className={`shrink-0 mt-0.5 flex items-center justify-center w-5 h-5 border rounded-sm transition-colors ${isReviewed ? 'bg-accent border-accent text-bg-main' : 'border-text-muted text-transparent'}`}>
                               <Check size={12} />
                             </div>
-                            <span className={`font-sans text-[15px] ${isReviewed ? 'text-text-primary' : 'text-text-secondary'}`}>
+                            <span className={`font-display text-xl ${isReviewed ? 'text-text-primary' : 'text-text-secondary'}`}>
                               {topic}
                             </span>
                           </button>
@@ -476,8 +585,8 @@ export default function LearnView({ category }: { category: Roadmap }) {
                   const isReadyToComplete = isMounted && allAssignmentsDone && allTopicsDone;
                   
                   return (
-                    <section className="pt-8 border-t-2 border-border-main mt-16 text-center">
-                      <h2 className="text-2xl font-sans font-bold text-text-primary mb-4">
+                    <section className="pt-8 border-t-2 border-border-main mt-8 md:mt-16 text-center">
+                      <h2 className="text-2xl font-display font-bold text-text-primary mb-4">
                         Ready to complete this module?
                       </h2>
                       
@@ -500,7 +609,7 @@ export default function LearnView({ category }: { category: Roadmap }) {
 
                       {!isReadyToComplete && (
                         <div className="mb-6">
-                          <p className="text-error text-sm bg-[#ff4d4f10] p-4 inline-block border border-error">
+                          <p className="text-error text-sm bg-bg-sec p-4 inline-block border border-error">
                             Please complete all assignments and review all topics to unlock completion.
                           </p>
                         </div>
@@ -509,16 +618,16 @@ export default function LearnView({ category }: { category: Roadmap }) {
                       <div className="flex flex-wrap justify-center gap-4">
                         <button 
                           onClick={() => setViewMode('overview')}
-                          className="border border-border-main text-text-secondary hover:text-text-primary hover:bg-bg-sec px-8 py-4 font-mono text-[12px] uppercase tracking-widest transition-colors"
+                          className="border border-border-main text-text-secondary hover:text-text-primary hover:bg-bg-sec px-4 py-3 md:px-8 md:py-4 font-mono text-[12px] uppercase tracking-widest transition-colors"
                         >
                           Not Yet
                         </button>
                         <button 
                           disabled={!isReadyToComplete}
                           onClick={() => markComplete(activeNode.id)}
-                          className={`border px-8 py-4 font-mono text-[12px] uppercase tracking-widest font-bold transition-all flex items-center gap-3 ${
+                          className={`border px-4 py-3 md:px-8 md:py-4 font-mono text-[12px] uppercase tracking-widest font-bold transition-all flex items-center gap-3 ${
                             isReadyToComplete 
-                              ? 'border-success bg-[#22c55e10] text-success hover:bg-success hover:text-bg-main shadow-[0_0_20px_rgba(34,197,94,0.3)]' 
+                              ? 'border-success bg-bg-main text-success hover:bg-success hover:text-bg-main ' 
                               : 'border-border-main bg-bg-sec text-text-muted opacity-50 cursor-not-allowed'
                           }`}
                         >

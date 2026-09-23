@@ -73,10 +73,35 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
 
   const progress = Math.round((Object.values(completedNodes).filter(Boolean).length / category.nodes.length) * 100) || 0;
 
+    if (category.id !== 'ai-engineering') {
+    return (
+      <div className="w-full flex flex-col items-center justify-center min-h-[70vh] px-4 py-20">
+        <div className="border border-border-main bg-bg-sec p-10 md:p-16 max-w-2xl w-full text-center relative overflow-hidden flex flex-col items-center">
+          <div className="font-mono text-xs tracking-widest text-text-muted mb-8 uppercase border-b border-border-main pb-4 inline-block px-8">
+            STATUS: UPCOMING
+          </div>
+          <h1 className="text-4xl md:text-5xl font-display font-normal text-text-primary mb-6 uppercase tracking-tight">
+            {category.title}
+          </h1>
+          <p className="text-base text-text-secondary mb-10 max-w-lg font-serif leading-relaxed">
+            This roadmap is currently being prepared for the LoopCraft learning library. We are building it carefully so that every roadmap provides a complete, practical learning experience.
+          </p>
+          <div className="font-mono text-xs tracking-[0.2em] text-accent border border-accent bg-accent/5 px-6 py-3 uppercase">
+            COMING SOON
+          </div>
+          
+          <Link href="/roadmaps" className="mt-12 text-sm font-mono text-text-muted hover:text-text-primary transition-colors inline-flex items-center gap-2">
+            &larr; BACK TO ROADMAPS
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full">
       {/* MANUAL MASTHEAD */}
-      <section className="max-w-6xl mx-auto px-6 pt-24 pb-12 border-b border-border-main relative">
+      <section className="max-w-6xl mx-auto px-4 md:px-6 pt-24 pb-12 border-b border-border-main relative">
         <div className="flex justify-between items-baseline font-mono text-[11px] tracking-widest uppercase text-text-muted mb-12">
           <span>FIG_001 &middot; CURRICULUM V1.0 &middot; 2026</span>
           <span className="text-accent flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-success"></span> OPEN SOURCE &middot; FREE</span>
@@ -84,12 +109,12 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           <div className="lg:col-span-7">
-            <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-sans font-normal text-text-primary leading-[0.9] tracking-tight mb-8 uppercase">
+            <h1 className="text-[clamp(1.4rem,6vw,5.5rem)] font-display font-normal text-text-primary leading-[0.9] tracking-tight mb-8 uppercase">
               {category.title.replace('2026', '')} <br />
-              <span className="text-text-muted text-4xl md:text-6xl">FROM SCRATCH</span>
+              <span className="text-text-muted text-[clamp(1.5rem,5vw,4.5rem)] font-display">FROM SCRATCH</span>
             </h1>
             
-            <p className="text-lg md:text-xl text-text-primary mb-2 font-sans leading-relaxed">
+            <p className="text-lg md:text-xl text-text-primary mb-2 font-serif leading-relaxed text-[0.96rem]">
               Every critical topic. Every phase. From Python basics to Gen AI and Agentic frameworks.
             </p>
             <p className="text-base text-text-muted mb-8 italic font-serif">
@@ -98,7 +123,7 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-8">
               {enrollmentDate ? (
-                <Link href={`/roadmap/${category.id}/learn`} className="border border-success text-success bg-[#22c55e10] px-4 py-3 text-[10px] font-mono tracking-widest uppercase text-center hover:bg-success hover:text-bg-main transition-colors block">
+                <Link href={`/roadmap/${category.id}/learn`} className="border border-success text-success bg-bg-sec px-4 py-3 text-[10px] font-mono tracking-widest uppercase text-center hover:bg-success hover:text-bg-main transition-colors block">
                   Enrolled: {formatDate(new Date(enrollmentDate))} <br/> [ Resume ]
                 </Link>
               ) : (
@@ -165,8 +190,8 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
       </section>
 
       {/* COURSE PATHS */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-b border-border-main">
-        <h2 className="text-3xl font-sans font-normal text-text-primary mb-4 uppercase">Choose the work you want to do</h2>
+      <section className="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-16 border-b border-border-main">
+        <h2 className="text-[clamp(1.4rem,4vw,2.5rem)] font-display font-normal text-text-primary mb-4 uppercase">Choose the work you want to do</h2>
         <p className="text-base text-text-secondary mb-12 max-w-2xl font-serif">
           AI engineering is larger than model code. Choose one of four core learning paths, then learn from the same source, labs, tests, and artifacts in the browser or on GitHub.
         </p>
@@ -175,8 +200,8 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
         <div className="border border-border-main p-8 md:p-12 relative overflow-hidden hidden md:block mb-16">
           {/* Top Node */}
           <div className="flex justify-center mb-10 relative z-10">
-            <div className="border border-border-main bg-bg-sec px-8 py-4 text-center min-w-[280px]">
-              <strong className="font-sans text-lg text-text-primary block mb-2 uppercase tracking-wide">AI Engineering</strong>
+            <div className="border border-border-main bg-bg-sec px-8 py-4 text-center w-full md:min-w-[280px] md:w-auto">
+              <strong className="font-display text-2xl text-text-primary block mb-2 uppercase tracking-wide">AI Engineering</strong>
               <span className="font-mono text-[10px] text-text-muted lowercase tracking-widest">learn the system, the work, and the build</span>
             </div>
           </div>
@@ -190,8 +215,8 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
             {/* Node 1 */}
             <div className="relative">
               <div className="absolute -top-10 left-1/2 w-[1px] h-10 bg-accent opacity-60 -translate-x-1/2"></div>
-              <div className="border border-border-main bg-bg-main p-5 text-center h-full flex flex-col justify-start hover:border-accent hover:shadow-[inset_0_0_0_1px_var(--color-accent)] hover:bg-[#6385f005] cursor-pointer transition-all">
-                <strong className="font-sans text-[13px] text-text-primary block mb-5 uppercase tracking-wide">Building and Deploying<br/>AI Applications</strong>
+              <div className="border border-border-main bg-bg-main p-5 text-center h-full flex flex-col justify-start hover:border-accent hover:shadow-[inset_0_0_0_1px_var(--color-accent)] hover:bg-accent-soft cursor-pointer transition-all">
+                <strong className="font-display text-xl text-text-primary block mb-5 uppercase tracking-wide">Building and Deploying<br/>AI Applications</strong>
                 <span className="font-mono text-[10px] text-text-muted lowercase leading-[1.6]">models, data, evaluation<br/>serving, release, operation</span>
               </div>
             </div>
@@ -199,8 +224,8 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
             {/* Node 2 */}
             <div className="relative">
               <div className="absolute -top-10 left-1/2 w-[1px] h-10 bg-accent opacity-60 -translate-x-1/2"></div>
-              <div className="border border-border-main bg-bg-main p-5 text-center h-full flex flex-col justify-start hover:border-accent hover:shadow-[inset_0_0_0_1px_var(--color-accent)] hover:bg-[#6385f005] cursor-pointer transition-all">
-                <strong className="font-sans text-[13px] text-text-primary block mb-5 uppercase tracking-wide">Software Engineering<br/>Fundamentals</strong>
+              <div className="border border-border-main bg-bg-main p-5 text-center h-full flex flex-col justify-start hover:border-accent hover:shadow-[inset_0_0_0_1px_var(--color-accent)] hover:bg-accent-soft cursor-pointer transition-all">
+                <strong className="font-display text-xl text-text-primary block mb-5 uppercase tracking-wide">Software Engineering<br/>Fundamentals</strong>
                 <span className="font-mono text-[10px] text-text-muted lowercase leading-[1.6]">repositories, interfaces<br/>tests, security, operations</span>
               </div>
             </div>
@@ -208,8 +233,8 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
             {/* Node 3 */}
             <div className="relative">
               <div className="absolute -top-10 left-1/2 w-[1px] h-10 bg-accent opacity-60 -translate-x-1/2"></div>
-              <div className="border border-border-main bg-bg-main p-5 text-center h-full flex flex-col justify-start hover:border-accent hover:shadow-[inset_0_0_0_1px_var(--color-accent)] hover:bg-[#6385f005] cursor-pointer transition-all">
-                <strong className="font-sans text-[13px] text-text-primary block mb-5 uppercase tracking-wide">Agent-Assisted<br/>Engineering</strong>
+              <div className="border border-border-main bg-bg-main p-5 text-center h-full flex flex-col justify-start hover:border-accent hover:shadow-[inset_0_0_0_1px_var(--color-accent)] hover:bg-accent-soft cursor-pointer transition-all">
+                <strong className="font-display text-xl text-text-primary block mb-5 uppercase tracking-wide">Agent-Assisted<br/>Engineering</strong>
                 <span className="font-mono text-[10px] text-text-muted lowercase leading-[1.6]">frame, plan, delegate<br/>verify, review, improve</span>
               </div>
             </div>
@@ -217,8 +242,8 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
             {/* Node 4 */}
             <div className="relative">
               <div className="absolute -top-10 left-1/2 w-[1px] h-10 bg-accent opacity-60 -translate-x-1/2"></div>
-              <div className="border border-border-main bg-bg-main p-5 text-center h-full flex flex-col justify-start hover:border-accent hover:shadow-[inset_0_0_0_1px_var(--color-accent)] hover:bg-[#6385f005] cursor-pointer transition-all">
-                <strong className="font-sans text-[13px] text-text-primary block mb-5 uppercase tracking-wide">Product Judgment<br/>and Delivery</strong>
+              <div className="border border-border-main bg-bg-main p-5 text-center h-full flex flex-col justify-start hover:border-accent hover:shadow-[inset_0_0_0_1px_var(--color-accent)] hover:bg-accent-soft cursor-pointer transition-all">
+                <strong className="font-display text-xl text-text-primary block mb-5 uppercase tracking-wide">Product Judgment<br/>and Delivery</strong>
                 <span className="font-mono text-[10px] text-text-muted lowercase leading-[1.6]">outcomes, evidence, risk<br/>scope, metrics, feedback</span>
               </div>
             </div>
@@ -228,10 +253,10 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
         {/* Detailed Route List */}
         <div className="border-t border-border-main flex flex-col">
           {/* Route 1 */}
-          <article className="grid grid-cols-1 lg:grid-cols-[240px_1fr_auto] gap-6 lg:gap-8 items-center p-5 border-b border-border-main bg-[#6385f015] shadow-[inset_4px_0_0_var(--color-accent)]">
+          <article className="grid grid-cols-1 lg:grid-cols-[240px_1fr_auto] gap-6 lg:gap-8 items-center p-5 border-b border-border-main bg-accent-soft shadow-[inset_4px_0_0_var(--color-accent)]">
             <div className="flex flex-col gap-1">
               <span className="font-mono text-[10px] uppercase tracking-widest text-accent">Recommended first</span>
-              <strong className="font-sans text-xl font-normal text-text-primary uppercase leading-tight">New to AI Engineering</strong>
+              <strong className="font-display text-[1.4rem] uppercase font-normal text-text-primary uppercase leading-tight">New to AI Engineering</strong>
             </div>
             <p className="text-sm text-text-secondary leading-relaxed font-serif">
               Set up a working environment, run the repository, and learn the lesson workflow before choosing a specialization.
@@ -250,7 +275,7 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
           <article className="grid grid-cols-1 lg:grid-cols-[240px_1fr_auto] gap-6 lg:gap-8 items-center p-5 border-b border-border-main">
             <div className="flex flex-col gap-1">
               <span className="font-mono text-[10px] uppercase tracking-widest text-accent">Core domain</span>
-              <strong className="font-sans text-xl font-normal text-text-primary uppercase leading-tight">Building and Deploying AI Applications</strong>
+              <strong className="font-display text-[1.4rem] uppercase font-normal text-text-primary uppercase leading-tight">Building and Deploying AI Applications</strong>
             </div>
             <p className="text-sm text-text-secondary leading-relaxed font-serif">
               Move from prompts, structured outputs, embeddings, and retrieval through evaluation, serving, observability, and safe release.
@@ -269,7 +294,7 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
           <article className="grid grid-cols-1 lg:grid-cols-[240px_1fr_auto] gap-6 lg:gap-8 items-center p-5 border-b border-border-main">
             <div className="flex flex-col gap-1">
               <span className="font-mono text-[10px] uppercase tracking-widest text-accent">Core domain</span>
-              <strong className="font-sans text-xl font-normal text-text-primary uppercase leading-tight">Software Engineering Fundamentals</strong>
+              <strong className="font-display text-[1.4rem] uppercase font-normal text-text-primary uppercase leading-tight">Software Engineering Fundamentals</strong>
             </div>
             <p className="text-sm text-text-secondary leading-relaxed font-serif">
               Build the repository, environment, interface, debugging, verification, security, release, and operational foundations AI systems depend on.
@@ -288,7 +313,7 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
           <article className="grid grid-cols-1 lg:grid-cols-[240px_1fr_auto] gap-6 lg:gap-8 items-center p-5 border-b border-border-main">
             <div className="flex flex-col gap-1">
               <span className="font-mono text-[10px] uppercase tracking-widest text-accent">Core domain</span>
-              <strong className="font-sans text-xl font-normal text-text-primary uppercase leading-tight">Agent-Assisted Engineering</strong>
+              <strong className="font-display text-[1.4rem] uppercase font-normal text-text-primary uppercase leading-tight">Agent-Assisted Engineering</strong>
             </div>
             <p className="text-sm text-text-secondary leading-relaxed font-serif">
               Frame the task, plan from repository evidence, engineer the loop and harness, isolate delegation, verify the result, and preserve feedback.
@@ -307,7 +332,7 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
           <article className="grid grid-cols-1 lg:grid-cols-[240px_1fr_auto] gap-6 lg:gap-8 items-center p-5 border-b border-border-main">
             <div className="flex flex-col gap-1">
               <span className="font-mono text-[10px] uppercase tracking-widest text-accent">Core domain</span>
-              <strong className="font-sans text-xl font-normal text-text-primary uppercase leading-tight">Product Judgment and Delivery</strong>
+              <strong className="font-display text-[1.4rem] uppercase font-normal text-text-primary uppercase leading-tight">Product Judgment and Delivery</strong>
             </div>
             <p className="text-sm text-text-secondary leading-relaxed font-serif">
               Turn observed work into outcomes, assumptions, testable slices, executable specifications, measurement plans, staged releases, and owned feedback.
@@ -326,7 +351,7 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
           <article className="grid grid-cols-1 lg:grid-cols-[240px_1fr_auto] gap-6 lg:gap-8 items-center p-5 border-b border-border-main">
             <div className="flex flex-col gap-1">
               <span className="font-mono text-[10px] uppercase tracking-widest text-accent">Focused path</span>
-              <strong className="font-sans text-xl font-normal text-text-primary uppercase leading-tight">Model Context Protocol (MCP)</strong>
+              <strong className="font-display text-[1.4rem] uppercase font-normal text-text-primary uppercase leading-tight">Model Context Protocol (MCP)</strong>
             </div>
             <p className="text-sm text-text-secondary leading-relaxed font-serif">
               Build, secure, verify, and operate stateless MCP systems from wire envelopes through release gates.
@@ -345,7 +370,7 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
           <article className="grid grid-cols-1 lg:grid-cols-[240px_1fr_auto] gap-6 lg:gap-8 items-center p-5 border-b border-border-main">
             <div className="flex flex-col gap-1">
               <span className="font-mono text-[10px] uppercase tracking-widest text-accent">Focused path</span>
-              <strong className="font-sans text-xl font-normal text-text-primary uppercase leading-tight">Agent Skills</strong>
+              <strong className="font-display text-[1.4rem] uppercase font-normal text-text-primary uppercase leading-tight">Agent Skills</strong>
             </div>
             <p className="text-sm text-text-secondary leading-relaxed font-serif">
               Build, invoke, route, secure, evaluate, package, and verify portable skills in real agent hosts.
@@ -364,7 +389,7 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
           <article className="grid grid-cols-1 lg:grid-cols-[240px_1fr_auto] gap-6 lg:gap-8 items-center p-5 border-b border-border-main">
             <div className="flex flex-col gap-1">
               <span className="font-mono text-[10px] uppercase tracking-widest text-accent">Practice by evidence</span>
-              <strong className="font-sans text-xl font-normal text-text-primary uppercase leading-tight">Certification Preparation</strong>
+              <strong className="font-display text-[1.4rem] uppercase font-normal text-text-primary uppercase leading-tight">Certification Preparation</strong>
             </div>
             <p className="text-sm text-text-secondary leading-relaxed font-serif">
               Choose a certification route, complete practical labs, keep learner-owned artifacts, and use original assessments.
@@ -382,14 +407,14 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
       </section>
 
       {/* PREFACE */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-b border-border-main">
+      <section className="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-16 border-b border-border-main">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
           <div className="md:col-span-3 font-mono text-[11px] tracking-[0.2em] uppercase text-accent">
             Preface
           </div>
           <div className="md:col-span-9" style={{ columnCount: typeof window !== 'undefined' && window.innerWidth > 768 ? 2 : 1, columnGap: '48px' }}>
             <p className="text-base text-text-secondary leading-relaxed mb-6">
-              <span className="float-left text-6xl font-sans text-text-primary leading-[0.8] mr-3 mt-1">H</span>
+              <span className="float-left text-6xl drop-cap mr-3 mt-1">H</span>
               ave this mindset of an expert handyman, who has strong fundamentals, wide knowledge of tools and a judgement of picking a right tool at the right time. 
             </p>
             <p className="text-base text-text-secondary leading-relaxed mb-6">
@@ -403,10 +428,10 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
       </section>
 
       {/* TABLE OF CONTENTS (TOC) */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-b border-border-main">
+      <section className="max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-16 border-b border-border-main">
         <div className="mb-10">
           <div className="font-mono text-[11px] tracking-[0.2em] uppercase text-accent mb-2">Curriculum</div>
-          <h2 className="text-3xl font-sans text-text-primary">Table of Contents</h2>
+          <h2 className="text-[clamp(1.4rem,4vw,2.5rem)] font-display text-text-primary">Table of Contents</h2>
         </div>
 
         <div className="border-t border-border-main">
@@ -424,7 +449,7 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
                     {(index + 1).toString().padStart(2, '0')}
                   </div>
                   
-                  <h3 className={`font-sans text-xl tracking-tight shrink-0 ${isCompleted ? 'text-text-muted line-through' : 'text-text-primary'}`}>
+                  <h3 className={`font-display text-[1.4rem] uppercase tracking-tight shrink-0 ${isCompleted ? 'text-text-muted line-through' : 'text-text-primary'}`}>
                     {node.title.replace(/Week \d+(, \d+)*:? /, '')}
                   </h3>
                   
@@ -452,18 +477,18 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
                 {/* Expanded Content */}
                 {isExpanded && (
                   <div className="p-8 bg-bg-sec border-t border-border-main mx-2 mb-4 mt-2">
-                    <p className="text-sm text-text-secondary mb-8 font-sans leading-relaxed max-w-3xl">
+                    <p className="text-sm text-text-secondary mb-8 font-serif leading-relaxed text-[0.96rem] max-w-3xl">
                       {node.description}
                     </p>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                       <div>
-                        <h4 className="font-mono text-[10px] tracking-widest uppercase text-text-muted mb-4 border-b border-border-main pb-2">
+                        <h4 className="font-display text-[10px] tracking-widest uppercase text-text-muted mb-4 border-b border-border-main pb-2">
                           Core Topics
                         </h4>
                         <ul className="space-y-2">
                           {node.topics.map((topic, i) => (
-                            <li key={i} className="flex items-start gap-3 text-sm text-text-secondary font-sans">
+                            <li key={i} className="flex items-start gap-3 text-[0.92rem] text-text-secondary font-serif">
                               <span className="text-text-muted mt-1 text-[8px]">&#9632;</span> {topic}
                             </li>
                           ))}
@@ -471,7 +496,7 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
                       </div>
                       
                       <div>
-                        <h4 className="font-mono text-[10px] tracking-widest uppercase text-text-muted mb-4 border-b border-border-main pb-2">
+                        <h4 className="font-display text-[10px] tracking-widest uppercase text-text-muted mb-4 border-b border-border-main pb-2">
                           Resources
                         </h4>
                         <ul className="space-y-3">
@@ -481,7 +506,7 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
                                 href={resource.url} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="text-sm text-accent hover:text-text-primary transition-colors font-sans flex items-start gap-2"
+                                className="text-sm text-accent hover:text-text-primary transition-colors font-serif flex items-start gap-2"
                               >
                                 <span className="font-mono text-[10px] mt-1">&rarr;</span> 
                                 <span className="underline decoration-border-main underline-offset-4 hover:decoration-accent">{resource.title}</span>
@@ -500,7 +525,7 @@ export default function RoadmapView({ category }: { category: Roadmap }) {
       </section>
 
       {/* LEGEND & COLOPHON */}
-      <section className="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center font-mono text-[10px] text-text-muted uppercase tracking-widest gap-6">
+      <section className="max-w-6xl mx-auto px-4 md:px-6 py-12 flex flex-col md:flex-row justify-between items-center font-mono text-[10px] text-text-muted uppercase tracking-widest gap-6">
         <div className="flex gap-6">
           <div className="flex items-center gap-2">
             <div className="w-2.5 h-2.5 bg-error/20 border border-error"></div>

@@ -1,30 +1,20 @@
 "use client";
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Search, Moon, Sun, MessageSquare, ChevronDown, User, LogOut } from 'lucide-react';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { logout } from '@/app/actions/auth';
+import { useTheme } from './ThemeProvider';
 
 export default function Navbar({ user, profile }: { user: any, profile: any }) {
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const { theme, setTheme, actualTheme } = useTheme();
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  useEffect(() => {
-    const isLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-    if (isLight) setTheme('light');
-  }, []);
+  const pathname = usePathname() || '/';
 
   const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    if (newTheme === 'light') {
-      document.documentElement.classList.add('light-theme');
-      document.documentElement.classList.remove('dark-theme');
-    } else {
-      document.documentElement.classList.add('dark-theme');
-      document.documentElement.classList.remove('light-theme');
-    }
+    setTheme(actualTheme === 'dark' ? 'light' : 'dark');
   };
 
   return (
@@ -34,37 +24,38 @@ export default function Navbar({ user, profile }: { user: any, profile: any }) {
         {/* Left: Branding */}
         <div className="flex items-center">
           <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
-            <Image 
-              src="/logo.png" 
-              alt="LoopCraft Logo" 
-              width={160} 
-              height={40} 
-              className="object-contain"
-              priority
-            />
+              <Image 
+                src="/logo.png" 
+                alt="LoopCraft Logo" 
+                width={160} 
+                height={40} 
+                className="object-contain transition-all duration-300"
+                style={{ filter: 'var(--logo-filter, none)' }}
+                priority
+              />
           </Link>
         </div>
 
         {/* Middle: Links */}
-        <div className="hidden md:flex items-center gap-10 font-sans font-medium text-[15px]">
-          <Link href="/" className="hover:text-text-primary transition-colors py-[18px]">Home</Link>
-          <Link href="/dashboard" className="hover:text-text-primary transition-colors py-[18px]">Dashboard</Link>
-          <Link href="/groups" className="text-accent hover:opacity-80 transition-opacity py-[18px]">Groups</Link>
-          <Link href="/roadmaps" className="hover:text-text-primary transition-colors py-[18px]">Roadmaps</Link>
-          <Link href="/roadmap/ai-engineering/learn" className="hover:text-text-primary transition-colors py-[18px]">Learn</Link>
+        <div className="hidden md:flex items-center gap-4 lg:gap-8 font-serif font-medium text-[14px] lg:text-[15px]">
+          <Link href="/" className={`transition-colors py-[18px] ${pathname === '/' ? 'text-accent' : 'hover:text-text-primary'}`}>Home</Link>
+          <Link href="/roadmaps" className={`transition-colors py-[18px] ${(pathname.startsWith('/roadmap') || pathname.startsWith('/roadmaps')) ? 'text-accent' : 'hover:text-text-primary'}`}>Roadmaps</Link>
+          <Link href="/dsa-sheets" className={`transition-colors py-[18px] ${pathname.startsWith('/dsa-sheets') ? 'text-accent' : 'hover:text-text-primary'}`}>DSA Sheets</Link>
+          <Link href="/groups" className={`transition-colors py-[18px] ${pathname.startsWith('/groups') ? 'text-accent' : 'hover:text-text-primary'}`}>Groups</Link>
+          <Link href="/about" className={`transition-colors py-[18px] ${pathname.startsWith('/about') ? 'text-accent' : 'hover:text-text-primary'}`}>About</Link>
         </div>
 
         {/* Right: Actions */}
         <div className="flex items-center gap-6">
           <button onClick={toggleTheme} className="hover:text-text-primary transition-colors">
-            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            {actualTheme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
           </button>
           
           {user ? (
             <div className="relative">
               <button 
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="border border-border-main rounded-md px-4 py-1.5 flex items-center gap-2 hover:bg-bg-panel hover:text-text-primary transition-colors text-sm font-sans font-medium"
+                className="border border-border-main rounded-md px-4 py-1.5 flex items-center gap-2 hover:bg-bg-panel hover:text-text-primary transition-colors text-sm font-serif font-medium"
               >
                 {profile?.display_name || user.email.split('@')[0]} <ChevronDown size={14} />
               </button>
@@ -88,10 +79,10 @@ export default function Navbar({ user, profile }: { user: any, profile: any }) {
             </div>
           ) : (
             <div className="flex items-center gap-3">
-              <Link href="/login" className="text-sm font-sans font-medium hover:text-text-primary transition-colors">
+              <Link href="/login" className="text-sm font-serif font-medium hover:text-text-primary transition-colors">
                 Login
               </Link>
-              <Link href="/signup" className="border border-accent text-accent rounded-md px-4 py-1.5 text-sm font-sans font-medium hover:bg-accent hover:text-bg-main transition-colors">
+              <Link href="/signup" className="border border-accent text-accent rounded-md px-4 py-1.5 text-sm font-serif font-medium hover:bg-accent hover:text-bg-main transition-colors">
                 Sign Up
               </Link>
             </div>

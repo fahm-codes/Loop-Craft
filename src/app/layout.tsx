@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { VT323, JetBrains_Mono, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { createClient } from "@/utils/supabase/server";
 
-const inter = Inter({
-  variable: "--font-sans",
+import AppLayout from "@/components/AppLayout";
+
+const display = VT323({
+  weight: "400",
+  variable: "--font-display",
+  subsets: ["latin"],
+});
+
+const serif = Source_Serif_4({
+  variable: "--font-serif",
   subsets: ["latin"],
 });
 
@@ -18,6 +26,27 @@ export const metadata: Metadata = {
   title: "LoopCraft | Developer Learning Platform",
   description: "A professional developer workspace for structured self-study.",
 };
+
+const themeScript = `
+  (function() {
+    try {
+      var theme = localStorage.getItem('loopcraft-theme');
+      var isLight = false;
+      if (theme === 'light') {
+        isLight = true;
+      } else if (theme === 'dark') {
+        isLight = false;
+      } else {
+        isLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+      }
+      if (isLight) {
+        document.documentElement.classList.add('light-theme');
+      } else {
+        document.documentElement.classList.add('dark-theme');
+      }
+    } catch (e) {}
+  })();
+`;
 
 export default async function RootLayout({
   children,
@@ -32,7 +61,6 @@ export default async function RootLayout({
     const { data } = await supabase.auth.getUser();
     user = data.user;
 
-    // Fetch profile if user exists
     if (user) {
       const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).single();
       profile = profileData;
@@ -42,15 +70,17 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en">
+    <html lang="en" className={`${display.variable} ${mono.variable} ${serif.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body
-        className={`${inter.variable} ${mono.variable} font-sans antialiased bg-bg-main text-text-primary min-h-screen relative`}
+        className={`font-serif antialiased bg-bg-main text-text-primary min-h-screen relative selection:bg-accent selection:text-white`}
       >
         <div className="grid-overlay"></div>
-        <div className="relative z-10 flex flex-col min-h-screen">
-          <Navbar user={user} profile={profile} />
+        <AppLayout user={user} profile={profile}>
           {children}
-        </div>
+        </AppLayout>
       </body>
     </html>
   );

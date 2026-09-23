@@ -13,7 +13,7 @@ export default async function LoginPage({
   return (
     <main className="flex-grow w-full max-w-md mx-auto px-6 py-20 flex flex-col justify-center min-h-[calc(100vh-80px)]">
       <div className="mb-10 text-center">
-        <h1 className="text-3xl font-sans font-bold text-text-primary mb-3">Welcome Back</h1>
+        <h1 className="text-3xl font-display font-bold text-text-primary mb-3">Welcome Back</h1>
         <p className="text-text-secondary font-mono text-sm">
           Login to continue your learning journey.
         </p>

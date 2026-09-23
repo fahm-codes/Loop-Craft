@@ -538,9 +538,11 @@ export function getAllRoadmaps(): Partial<Roadmap>[] {
     if (type.categories) {
       type.categories.forEach(cat => {
         if (cat.roadmaps) collectRoadmaps(cat.roadmaps);
+        if ((cat as any).nodes) all.push(cat as any);
         if (cat.subcategories) {
           cat.subcategories.forEach(sub => {
             if (sub.roadmaps) collectRoadmaps(sub.roadmaps);
+            if ((sub as any).nodes) all.push(sub as any);
           });
         }
       });

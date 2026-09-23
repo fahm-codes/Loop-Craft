@@ -119,7 +119,7 @@ export default function GroupDetailView({ groupId }: { groupId: string }) {
             <Link href="/groups" className="text-text-muted hover:text-text-primary font-mono text-[10px] uppercase tracking-widest flex items-center gap-2 mb-6 transition-colors">
               <ChevronLeft size={14} /> Back to Groups
             </Link>
-            <h1 className="text-3xl md:text-5xl font-sans font-normal text-text-primary uppercase tracking-tight mb-2">
+            <h1 className="text-3xl md:text-5xl font-display font-normal text-text-primary uppercase tracking-tight mb-2">
               {group.name}
             </h1>
             <p className="text-text-secondary font-mono text-sm flex items-center gap-3">

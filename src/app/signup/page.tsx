@@ -6,14 +6,39 @@ import { redirect } from 'next/navigation'
 export default async function SignupPage({
   searchParams,
 }: {
-  searchParams: { error?: string, next?: string }
+  searchParams: { error?: string, next?: string, success?: string }
 }) {
-  const { error, next } = await searchParams
+  const { error, next, success } = await searchParams
   
+  if (success) {
+    return (
+      <main className="flex-grow w-full max-w-md mx-auto px-6 py-20 flex flex-col justify-center min-h-[calc(100vh-80px)]">
+        <div className="mb-10 text-center">
+          <h1 className="text-3xl font-display font-bold text-text-primary mb-3">Check Your Email</h1>
+          <p className="text-text-secondary font-mono text-sm">
+            We've sent you a confirmation link.
+          </p>
+        </div>
+
+        <div className="bg-bg-sec border border-border-main p-8 rounded-md shadow-[0_0_30px_rgba(0,0,0,0.5)] text-center flex flex-col items-center">
+          <div className="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mb-6">
+            <Mail size={32} className="text-accent" />
+          </div>
+          <p className="text-text-primary font-mono text-sm mb-8">
+            {success}
+          </p>
+          <Link href={`/login${next ? `?next=${next}` : ''}`} className="w-full bg-accent text-bg-main py-3.5 rounded-md font-mono text-sm uppercase font-bold tracking-widest hover:opacity-90 transition-opacity flex items-center justify-center">
+            Go to Login
+          </Link>
+        </div>
+      </main>
+    )
+  }
+
   return (
     <main className="flex-grow w-full max-w-md mx-auto px-6 py-20 flex flex-col justify-center min-h-[calc(100vh-80px)]">
       <div className="mb-10 text-center">
-        <h1 className="text-3xl font-sans font-bold text-text-primary mb-3">Create an Account</h1>
+        <h1 className="text-3xl font-display font-bold text-text-primary mb-3">Create an Account</h1>
         <p className="text-text-secondary font-mono text-sm">
           Join LoopCraft to track your progress and build your portfolio.
         </p>

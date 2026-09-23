@@ -64,7 +64,7 @@ export default function GroupsView() {
             <div className="font-mono text-[11px] uppercase tracking-widest text-text-muted mb-4 flex items-center gap-2">
               <Users size={14} /> Accountability
             </div>
-            <h1 className="text-3xl md:text-5xl font-sans font-normal text-text-primary uppercase tracking-tight mb-2">
+            <h1 className="text-3xl md:text-5xl font-display font-normal text-text-primary uppercase tracking-tight mb-2">
               Study Groups
             </h1>
             <p className="text-text-secondary font-mono text-sm">
@@ -81,7 +81,7 @@ export default function GroupsView() {
             </button>
             <button 
               onClick={() => setMode('CREATE')}
-              className="border border-accent bg-[#6385f010] text-accent hover:bg-accent hover:text-bg-main px-6 py-3 font-mono text-[11px] uppercase tracking-widest transition-all flex items-center gap-2 shadow-[0_0_10px_rgba(99,133,240,0.15)]"
+              className="border border-accent bg-accent-soft text-accent hover:bg-accent hover:text-bg-main px-6 py-3 font-mono text-[11px] uppercase tracking-widest transition-all flex items-center gap-2 "
             >
               <Plus size={14} /> Create Group
             </button>
@@ -97,7 +97,7 @@ export default function GroupsView() {
         {mode === 'JOIN' && (
           <div className="border border-border-main bg-bg-sec p-8 mb-12 animate-in fade-in slide-in-from-top-4">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-sans text-text-primary">Join a Study Group</h2>
+              <h2 className="text-xl font-display text-text-primary">Join a Study Group</h2>
               <button onClick={() => { setMode('LIST'); setErrorMsg(''); }} className="text-text-muted hover:text-text-primary font-mono text-[11px] uppercase">Cancel</button>
             </div>
             <form onSubmit={handleJoin} className="flex gap-4">
@@ -118,7 +118,7 @@ export default function GroupsView() {
         {mode === 'CREATE' && (
           <div className="border border-border-main bg-bg-sec p-8 mb-12 animate-in fade-in slide-in-from-top-4">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-sans text-text-primary">Create a Study Group</h2>
+              <h2 className="text-xl font-display text-text-primary">Create a Study Group</h2>
               <button onClick={() => { setMode('LIST'); setErrorMsg(''); }} className="text-text-muted hover:text-text-primary font-mono text-[11px] uppercase">Cancel</button>
             </div>
             <form onSubmit={handleCreate} className="space-y-6">
@@ -129,7 +129,7 @@ export default function GroupsView() {
                   placeholder="e.g. AI Engineering - Cohort Alpha" 
                   value={createName}
                   onChange={e => setCreateName(e.target.value)}
-                  className="w-full bg-bg-main border border-border-main px-4 py-3 font-sans text-sm text-text-primary focus:outline-none focus:border-accent"
+                  className="w-full bg-bg-main border border-border-main px-4 py-3 font-serif text-sm text-text-primary focus:outline-none focus:border-accent"
                 />
               </div>
               <div>
@@ -137,7 +137,7 @@ export default function GroupsView() {
                 <select 
                   value={createRoadmapId}
                   onChange={e => setCreateRoadmapId(e.target.value)}
-                  className="w-full bg-bg-main border border-border-main px-4 py-3 font-sans text-sm text-text-primary focus:outline-none focus:border-accent"
+                  className="w-full bg-bg-main border border-border-main px-4 py-3 font-serif text-sm text-text-primary focus:outline-none focus:border-accent"
                 >
                   <option value="" disabled>Select a Roadmap...</option>
                   {getAllRoadmaps().map(r => (
@@ -155,13 +155,13 @@ export default function GroupsView() {
         {groups.length === 0 && mode === 'LIST' ? (
           <div className="border border-border-main bg-bg-sec p-16 text-center">
             <Users size={48} className="text-text-muted mb-6 mx-auto" />
-            <h2 className="text-2xl font-sans text-text-primary mb-3">You're not in a study group yet.</h2>
+            <h2 className="text-2xl font-display text-text-primary mb-3">You're not in a study group yet.</h2>
             <p className="text-text-secondary font-mono text-sm max-w-md mx-auto mb-8">
               Join a small group of up to 5 learners to stay accountable, practice together, and master your roadmap.
             </p>
             <div className="flex justify-center gap-4">
               <button onClick={() => setMode('JOIN')} className="border border-border-main bg-bg-main text-text-primary px-6 py-3 font-mono text-[11px] uppercase tracking-widest hover:bg-bg-panel transition-colors">Join Group</button>
-              <button onClick={() => setMode('CREATE')} className="border border-accent bg-[#6385f010] text-accent px-6 py-3 font-mono text-[11px] uppercase tracking-widest hover:bg-accent hover:text-bg-main transition-colors">Create Group</button>
+              <button onClick={() => setMode('CREATE')} className="border border-accent bg-accent-soft text-accent px-6 py-3 font-mono text-[11px] uppercase tracking-widest hover:bg-accent hover:text-bg-main transition-colors">Create Group</button>
             </div>
           </div>
         ) : (
@@ -169,11 +169,11 @@ export default function GroupsView() {
             {groups.map(group => {
               const roadmap = require('@/data/roadmap').getRoadmapById(group.roadmapId);
               return (
-                <Link key={group.id} href={`/groups/${group.id}`} className="block border border-border-main bg-bg-sec hover:border-accent hover:shadow-[0_0_15px_rgba(99,133,240,0.1)] transition-all p-6 relative group">
+                <Link key={group.id} href={`/groups/${group.id}`} className="block border border-border-main bg-bg-sec hover:border-accent  transition-all p-6 relative group">
                   <div className="font-mono text-[10px] uppercase tracking-widest text-text-muted mb-3">
                     {roadmap?.title || 'Unknown Roadmap'}
                   </div>
-                  <h3 className="text-xl font-sans text-text-primary mb-6 pr-8">{group.name}</h3>
+                  <h3 className="text-xl font-display text-text-primary mb-6 pr-8">{group.name}</h3>
                   
                   <div className="flex justify-between items-end">
                     <div>

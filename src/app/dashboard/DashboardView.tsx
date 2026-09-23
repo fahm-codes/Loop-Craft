@@ -87,15 +87,15 @@ export default function DashboardView() {
 
   if (!activeRoadmap) {
     return (
-      <div className="min-h-[calc(100vh-64px)] bg-bg-main flex flex-col items-center justify-center p-8 text-center">
+      <div className="min-h-[calc(100vh-64px)] bg-bg-main flex flex-col items-center justify-center p-4 md:p-8 text-center">
         <Terminal size={48} className="text-text-muted mb-6" />
-        <h1 className="text-3xl font-sans font-bold text-text-primary mb-4">No Active Workspace</h1>
+        <h1 className="text-3xl font-display font-bold text-text-primary mb-4">No Active Workspace</h1>
         <p className="text-text-secondary font-mono text-sm mb-8 max-w-md">
           You haven't started any learning roadmaps yet. Explore our curriculum to begin your journey.
         </p>
         <Link 
           href="/roadmaps" 
-          className="border border-accent bg-[#6385f010] text-accent hover:bg-accent hover:text-bg-main px-8 py-4 font-mono text-[12px] uppercase tracking-widest font-bold transition-all flex items-center gap-3 shadow-[0_0_20px_rgba(99,133,240,0.15)]"
+          className="border border-accent bg-accent-soft text-accent hover:bg-accent hover:text-bg-main px-4 py-3 md:px-8 md:py-4 font-mono text-[12px] uppercase tracking-widest font-bold transition-all flex items-center gap-3 "
         >
           Explore Roadmaps <ArrowRight size={16} />
         </Link>
@@ -162,7 +162,7 @@ export default function DashboardView() {
             <div className="font-mono text-[11px] uppercase tracking-widest text-text-muted mb-4 flex items-center gap-2">
               <Terminal size={14} /> Active Workspace
             </div>
-            <h1 className="text-3xl md:text-5xl font-sans font-normal text-text-primary uppercase tracking-tight mb-2">
+            <h1 className="text-3xl md:text-5xl font-display font-normal text-text-primary uppercase tracking-tight mb-2">
               {roadmap.title}
             </h1>
             <p className="text-text-secondary font-mono text-sm">
@@ -175,7 +175,7 @@ export default function DashboardView() {
             <div className="font-mono text-[10px] uppercase tracking-widest text-text-muted mb-4">Overall Progress</div>
             <Link 
               href={`/roadmap/${roadmap.id}/learn`}
-              className={`w-full md:w-auto border px-8 py-3 hover:opacity-90 font-mono text-[12px] font-bold uppercase tracking-widest transition-opacity flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(99,133,240,0.3)] ${
+              className={`w-full md:w-auto border px-4 py-2 md:px-8 md:py-3 hover:opacity-90 font-mono text-[12px] font-bold uppercase tracking-widest transition-opacity flex items-center justify-center gap-3  ${
                 missedTasks.length > 0 
                 ? 'border-error bg-[#ff4d4f15] text-error'
                 : 'border-accent bg-accent text-bg-main'
@@ -186,19 +186,19 @@ export default function DashboardView() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:p-8">
           
           {/* LEFT COLUMN: Main Dashboard Info */}
           <div className="lg:col-span-2 space-y-8">
             
             {/* WHAT SHOULD I DO NEXT? */}
             {!isFullyCompleted && (
-              <section className={`border p-6 md:p-8 ${missedTasks.length > 0 ? 'border-error bg-[#ff4d4f05]' : 'border-accent bg-[#6385f005]'}`}>
+              <section className={`border p-6 md:p-4 md:p-8 ${missedTasks.length > 0 ? 'border-error bg-[#ff4d4f05]' : 'border-accent bg-accent-soft'}`}>
                 <div className={`font-mono text-[11px] uppercase tracking-widest mb-6 flex items-center gap-2 ${missedTasks.length > 0 ? 'text-error' : 'text-accent'}`}>
                   {missedTasks.length > 0 ? <AlertTriangle size={14} /> : <Target size={14} />} 
                   {missedTasks.length > 0 ? 'Action Required' : 'Primary Action'}
                 </div>
-                <h2 className="text-2xl font-sans text-text-primary mb-2">{primaryAction}</h2>
+                <h2 className="text-2xl font-display text-text-primary mb-2">{primaryAction}</h2>
                 <p className="text-text-secondary text-sm mb-8">
                   {primaryActionDesc}
                 </p>
@@ -230,7 +230,7 @@ export default function DashboardView() {
                   <div className="font-mono text-[11px] uppercase tracking-widest text-text-muted mb-4 flex items-center gap-2">
                     <Code2 size={14} className={pendingAssignments > 0 ? "text-error" : "text-success"} /> Practice Status
                   </div>
-                  <div className="text-2xl font-sans font-bold text-text-primary mb-1">
+                  <div className="text-2xl font-display text-text-primary mb-1">
                     {nodeAssignmentsDone.length} / {assignments.length}
                   </div>
                   <div className="text-text-secondary text-sm break-all truncate">
@@ -242,7 +242,7 @@ export default function DashboardView() {
                   <div className="font-mono text-[11px] uppercase tracking-widest text-text-muted mb-4 flex items-center gap-2">
                     <ListChecks size={14} className={pendingTopics > 0 ? "text-accent" : "text-success"} /> Review Status
                   </div>
-                  <div className="text-2xl font-sans font-bold text-text-primary mb-1">
+                  <div className="text-2xl font-display text-text-primary mb-1">
                     {nodeTopicsDone.length} / {topics.length}
                   </div>
                   <div className="text-text-secondary text-sm">Topics Reviewed</div>
@@ -251,7 +251,7 @@ export default function DashboardView() {
             )}
 
             {/* SCHEDULE / TODAY / UPCOMING */}
-            <section className="border border-border-main bg-bg-main p-6 md:p-8">
+            <section className="border border-border-main bg-bg-main p-6 md:p-4 md:p-8">
               <div className="font-mono text-[11px] uppercase tracking-widest text-text-muted mb-6 flex justify-between items-center border-b border-border-main pb-4">
                 <div className="flex items-center gap-2"><Clock size={14} /> Schedule</div>
                 {missedTasks.length > 0 && <span className="text-error font-bold">{missedTasks.length} Missed</span>}
@@ -265,7 +265,7 @@ export default function DashboardView() {
                       <div className="font-mono text-[10px] text-error uppercase tracking-widest">Missed</div>
                     </div>
                     <div>
-                      <div className="font-sans text-[15px] text-text-primary mb-1">{missedTasks[0].node.title}</div>
+                      <div className="font-display text-xl text-text-primary mb-1">{missedTasks[0].node.title}</div>
                       <div className="font-mono text-[11px] text-text-muted">
                         Due: {formatDate(missedTasks[0].end)}
                       </div>
@@ -279,7 +279,7 @@ export default function DashboardView() {
                       <div className="font-mono text-[10px] text-accent uppercase tracking-widest">Current</div>
                     </div>
                     <div>
-                      <div className="font-sans text-[15px] text-text-primary mb-1">{currentTask.node.title}</div>
+                      <div className="font-display text-xl text-text-primary mb-1">{currentTask.node.title}</div>
                       <div className="font-mono text-[11px] text-text-muted">
                         {formatDate(currentTask.start)} - {formatDate(currentTask.end)}
                       </div>
@@ -293,7 +293,7 @@ export default function DashboardView() {
                       <div className="font-mono text-[10px] text-text-muted uppercase tracking-widest">Upcoming</div>
                     </div>
                     <div>
-                      <div className="font-sans text-[15px] text-text-primary mb-1">{upcomingTasks[0].node.title}</div>
+                      <div className="font-display text-xl text-text-primary mb-1">{upcomingTasks[0].node.title}</div>
                       <div className="font-mono text-[11px] text-text-muted">
                         {formatDate(upcomingTasks[0].start)} - {formatDate(upcomingTasks[0].end)}
                       </div>
@@ -311,7 +311,7 @@ export default function DashboardView() {
 
             {/* MY STUDY GROUPS WIDGET */}
             {myGroups.length > 0 && (
-              <section className="border border-border-main bg-bg-sec p-6 md:p-8">
+              <section className="border border-border-main bg-bg-sec p-6 md:p-4 md:p-8">
                 <div className="font-mono text-[11px] uppercase tracking-widest text-text-muted mb-6 flex justify-between items-center border-b border-border-main pb-4">
                   <div className="flex items-center gap-2"><Users size={14} /> My Study Groups</div>
                   <Link href="/groups" className="text-accent hover:text-text-primary transition-colors">View All</Link>
@@ -322,7 +322,7 @@ export default function DashboardView() {
                     const upcomingMilestone = g.milestones.find(m => !m.isCompleted);
                     return (
                       <Link key={g.id} href={`/groups/${g.id}`} className="border border-border-main bg-bg-main p-4 hover:border-accent transition-colors block">
-                        <div className="font-sans text-[15px] text-text-primary font-bold mb-2 truncate">{g.name}</div>
+                        <div className="font-display text-xl text-text-primary font-bold mb-2 truncate">{g.name}</div>
                         <div className="flex justify-between items-end">
                           <div className="font-mono text-[10px] text-text-muted uppercase tracking-widest flex items-center gap-2">
                             <Users size={12} /> {g.members.length}/5 Members
@@ -344,7 +344,7 @@ export default function DashboardView() {
           
           {/* RIGHT COLUMN: Roadmap Progress Tree */}
           <div className="lg:col-span-1">
-            <section className="border border-border-main bg-bg-sec p-6 md:p-8 h-full">
+            <section className="border border-border-main bg-bg-sec p-6 md:p-4 md:p-8 h-full">
               <div className="font-mono text-[11px] uppercase tracking-widest text-text-muted mb-6 flex items-center gap-2 border-b border-border-main pb-4">
                 <BookOpen size={14} /> Roadmap Structure
               </div>
@@ -382,7 +382,7 @@ export default function DashboardView() {
                         <div className="font-mono text-[10px] uppercase tracking-widest mb-1 text-text-muted">
                           Module {s.index + 1}
                         </div>
-                        <div className={`font-sans text-[14px] leading-tight ${isCurrent ? 'text-accent font-bold' : isMissed ? 'text-error font-bold' : 'text-text-primary'}`}>
+                        <div className={`font-display text-lg leading-tight ${isCurrent ? 'text-accent font-bold' : isMissed ? 'text-error font-bold' : 'text-text-primary'}`}>
                           {s.node.title}
                         </div>
                         {isMissed && (

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { platformCategories } from '@/data/roadmap';
-import { Search, ChevronRight, LayoutGrid } from 'lucide-react';
+import { Search, ChevronRight, LayoutGrid, Code2 } from 'lucide-react';
 
 export default function RoadmapsIndexPage() {
   return (
@@ -8,7 +8,7 @@ export default function RoadmapsIndexPage() {
       
       <main className="flex-grow w-full max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 py-12">
         <div className="mb-12">
-          <h1 className="text-4xl font-sans font-bold text-text-primary mb-4">Explore Categories</h1>
+          <h1 className="text-4xl font-display font-bold text-text-primary mb-4">Explore Categories</h1>
           <p className="text-text-secondary font-mono text-sm max-w-2xl leading-relaxed">
             Choose a category to find the perfect learning path tailored to your goals. Our roadmaps provide structured, step-by-step guidance from absolute beginner to master.
           </p>
@@ -33,7 +33,7 @@ export default function RoadmapsIndexPage() {
             <Link 
               href={`/roadmaps/${category.id}`} 
               key={category.id}
-              className="group block bg-bg-sec border border-border-main rounded-md p-6 hover:border-accent transition-all hover:shadow-[0_0_20px_rgba(99,133,240,0.1)]"
+              className="group block bg-bg-sec border border-border-main rounded-md p-6 hover:border-accent transition-all "
             >
               <div className="flex justify-between items-start mb-6">
                 <div className="bg-bg-main p-3 rounded-md border border-border-main">
@@ -48,11 +48,7 @@ export default function RoadmapsIndexPage() {
               
               <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between text-xs font-mono text-text-muted border-t border-border-main pt-4">
-                  <span>{count} Roadmaps Available</span>
-                </div>
-                
-                <div className="flex items-center justify-between text-accent font-mono text-xs font-bold mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span>VIEW CATEGORY</span>
+                  <span>{count} ROADMAPS</span>
                   <ChevronRight size={16} />
                 </div>
               </div>

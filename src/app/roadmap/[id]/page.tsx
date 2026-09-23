@@ -1,10 +1,11 @@
 import { notFound } from 'next/navigation';
-import { getRoadmapById, platformCategories, aiEngineeringRoadmap, getAllRoadmaps } from '@/data/roadmap';
+import { platformCategories, aiEngineeringRoadmap, getAllRoadmaps } from '@/data/roadmap';
+import { fetchRoadmapById } from '@/data/roadmap_fetcher';
 import RoadmapView from './RoadmapView';
 
 export default async function RoadmapPage({ params }: { params: { id: string } }) {
   const { id } = await params;
-  const roadmap = getRoadmapById(id);
+  const roadmap = await fetchRoadmapById(id);
   
   if (!roadmap) {
     notFound();

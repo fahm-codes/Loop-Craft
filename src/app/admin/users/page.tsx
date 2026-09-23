@@ -1,0 +1,88 @@
+import { createClient } from '@/utils/supabase/server';
+import { Search, ShieldAlert, Edit2 } from 'lucide-react';
+import Link from 'next/link';
+
+export default async function AdminUsersPage({ searchParams }: { searchParams: { q?: string } }) {
+  const supabase = await createClient();
+  const { q } = await searchParams;
+
+  let query = supabase.from('profiles').select('*').order('created_at', { ascending: false });
+  
+  if (q) {
+    query = query.or(`email.ilike.%\${q}%,full_name.ilike.%\${q}%`);
+  }
+
+  const { data: users, error } = await query.limit(50);
+
+  return (
+    <div>
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+        <h1 className="text-3xl font-display uppercase tracking-tight">User Management</h1>
+        
+        <form className="relative w-full md:w-64">
+          <input 
+            type="text" 
+            name="q"
+            defaultValue={q || ''}
+            placeholder="Search users..." 
+            className="w-full bg-bg-sec border border-border-main px-4 py-2 pl-10 font-mono text-sm text-text-primary focus:outline-none focus:border-accent"
+          />
+          <Search size={16} className="absolute left-3 top-2.5 text-text-muted" />
+        </form>
+      </div>
+
+      {error ? (
+        <div className="bg-red-500/10 border border-red-500/30 p-4 text-red-400 font-mono text-sm flex items-center gap-3">
+          <ShieldAlert size={18} />
+          Failed to load users: {error.message}
+        </div>
+      ) : (
+        <div className="border border-border-main bg-bg-sec overflow-x-auto">
+          <table className="w-full text-left font-mono text-sm whitespace-nowrap">
+            <thead>
+              <tr className="border-b border-border-main bg-bg-main text-text-muted">
+                <th className="px-6 py-4 font-normal">User</th>
+                <th className="px-6 py-4 font-normal">Role</th>
+                <th className="px-6 py-4 font-normal">Joined</th>
+                <th className="px-6 py-4 font-normal text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users?.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="px-6 py-8 text-center text-text-muted">No users found.</td>
+                </tr>
+              )}
+              {users?.map((u) => (
+                <tr key={u.id} className="border-b border-border-main last:border-0 hover:bg-bg-main/50 transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="text-text-primary font-bold">{u.full_name || 'Unknown'}</div>
+                    <div className="text-text-muted text-xs">{u.email}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-1 rounded-sm text-xs border \${
+                      u.role === 'SUPER_ADMIN' ? 'bg-red-500/10 border-red-500/30 text-red-400' :
+                      u.role === 'ADMIN' ? 'bg-orange-500/10 border-orange-500/30 text-orange-400' :
+                      u.role === 'CONTENT_MANAGER' ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' :
+                      'bg-green-500/10 border-green-500/30 text-green-400'
+                    }`}>
+                      {u.role}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-text-secondary">
+                    {new Date(u.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <Link href={`/admin/users/\${u.id}`} className="text-accent hover:underline flex items-center justify-end gap-2">
+                      <Edit2 size={14} /> Edit
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
