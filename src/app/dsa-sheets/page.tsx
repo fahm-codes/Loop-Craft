@@ -1,8 +1,11 @@
 import Link from 'next/link';
-import { allDSASheets } from '@/data/dsaSheets';
+import { db } from '@/db';
+import { dsaSheets } from '@/db/schema';
 import { ChevronRight, Code2 } from 'lucide-react';
 
-export default function DSASheetsIndexPage() {
+export default async function DSASheetsIndexPage() {
+  const allSheets = await db.select().from(dsaSheets);
+
   return (
     <div className="min-h-screen bg-bg-main flex flex-col">
       <main className="flex-grow w-full max-w-screen-2xl mx-auto px-6 md:px-12 lg:px-16 py-12">
@@ -14,7 +17,7 @@ export default function DSASheetsIndexPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {allDSASheets.map((sheet) => (
+          {allSheets.map((sheet) => (
             <Link 
               href={`/dsa-sheets/${sheet.id}`} 
               key={sheet.id}
@@ -33,7 +36,7 @@ export default function DSASheetsIndexPage() {
               
               <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between text-xs font-mono text-text-muted border-t border-border-main pt-4">
-                  <span>{sheet.totalProblems} PROBLEMS</span>
+                  <span>Explore Sheet</span>
                   <ChevronRight size={16} />
                 </div>
               </div>

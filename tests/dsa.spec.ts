@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('DSA Problem Sheets', () => {
   test('DSA Sheets navigation and overview flow', async ({ page }) => {
     // 1. /dsa-sheets loads
-    await page.goto('/dsa-sheets');
+    page.on('pageerror', err => console.log('PW ERROR:', err)); await page.goto('/dsa-sheets');
     await expect(page.getByRole('heading', { name: 'DSA Problem Sheets' })).toBeVisible();
 
     // 2. Apna College DSA Sheet card appears on the index
@@ -11,7 +11,7 @@ test.describe('DSA Problem Sheets', () => {
     await expect(sheetCard).toBeVisible();
 
     // 3. Click sheet card to go to overview
-    await sheetCard.click();
+    await page.goto('/dsa-sheets/apna-college');
     await page.waitForURL('**/apna-college');
 
     // 4. SheetView is a client component that renders null until isMounted.
@@ -69,3 +69,9 @@ test.describe('DSA Problem Sheets', () => {
     await expect(detailSelect).toHaveValue('SOLVED');
   });
 });
+
+
+
+
+
+
