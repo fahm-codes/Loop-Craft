@@ -80,11 +80,12 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
                       {u.role}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-text-secondary">
+                  <td className="px-6 py-4 text-text-secondary flex flex-col gap-1">
                     {new Date(u.createdAt).toLocaleDateString()}
+                    {u.isSuspended && <span className="text-xs text-red-500 font-bold uppercase">Suspended</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <Link href={`/admin/users/\${u.id}`} className="text-accent hover:underline flex items-center justify-end gap-2">
+                    <Link href={`/admin/users/${u.id}`} className="text-accent hover:underline flex items-center justify-end gap-2">
                       <Edit2 size={14} /> Edit
                     </Link>
                   </td>

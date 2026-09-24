@@ -8,7 +8,8 @@ import {
   uniqueIndex,
   unique,
   primaryKey,
-  foreignKey
+  foreignKey,
+  boolean
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -66,6 +67,7 @@ export const profiles = pgTable('profiles', {
   email: text('email'),
   fullName: text('full_name'),
   role: appRoleEnum('role').default('LEARNER').notNull(),
+  isSuspended: boolean('is_suspended').default(false).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
 });

@@ -1,35 +1,35 @@
-import { Users, Map, BookOpen, PenTool } from 'lucide-react';
+import { Users, Map, BookOpen, UserCheck, Code } from 'lucide-react';
 import { db } from '@/db';
-import { profiles, roadmaps, roadmapNodes, assignmentSubmissions } from '@/db/schema';
-import { count } from 'drizzle-orm';
+import { profiles, roadmaps, dsaSheets } from '@/db/schema';
+import { count, eq } from 'drizzle-orm';
 
 export default async function AdminDashboard() {
   let userCount = 'Unavailable';
+  let activeUserCount = 'Unavailable';
   let roadmapCount = 'Unavailable';
-  let lessonCount = 'Unavailable';
-  let submissionCount = 'Unavailable';
+  let dsaSheetCount = 'Unavailable';
 
   try {
     const profileCountResult = await db.select({ count: count() }).from(profiles);
     userCount = profileCountResult[0].count.toString();
 
+    const activeUserCountResult = await db.select({ count: count() }).from(profiles).where(eq(profiles.isSuspended, false));
+    activeUserCount = activeUserCountResult[0].count.toString();
+
     const roadmapCountResult = await db.select({ count: count() }).from(roadmaps);
     roadmapCount = roadmapCountResult[0].count.toString();
 
-    const lessonCountResult = await db.select({ count: count() }).from(roadmapNodes);
-    lessonCount = lessonCountResult[0].count.toString();
-
-    const submissionCountResult = await db.select({ count: count() }).from(assignmentSubmissions);
-    submissionCount = submissionCountResult[0].count.toString();
+    const dsaSheetCountResult = await db.select({ count: count() }).from(dsaSheets);
+    dsaSheetCount = dsaSheetCountResult[0].count.toString();
   } catch (err) {
     console.error("Dashboard count error:", err);
   }
 
   const stats = [
     { title: 'Total Users', value: userCount, icon: Users },
+    { title: 'Active Users', value: activeUserCount, icon: UserCheck },
     { title: 'Roadmaps', value: roadmapCount, icon: Map },
-    { title: 'Lessons / Modules', value: lessonCount, icon: BookOpen },
-    { title: 'Submissions', value: submissionCount, icon: PenTool },
+    { title: 'DSA Sheets', value: dsaSheetCount, icon: Code },
   ];
 
   return (

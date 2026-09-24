@@ -1,38 +1,37 @@
 import { db } from '@/db';
-import { roadmaps } from '@/db/schema';
+import { dsaSheets } from '@/db/schema';
 import { validateSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { createRoadmap, deleteRoadmap } from '@/app/actions/admin';
+import { createDsaSheet, deleteDsaSheet } from '@/app/actions/admin';
 import { Plus, Trash2 } from 'lucide-react';
 
-export default async function AdminRoadmapsPage() {
+export default async function AdminDsaPage() {
   const session = await validateSession();
   if (!session || !['SUPER_ADMIN', 'ADMIN'].includes(session.profile?.role || '')) {
     redirect('/');
   }
 
-  const allRoadmaps = await db.select().from(roadmaps);
+  const allSheets = await db.select().from(dsaSheets);
 
   async function handleCreate(formData: FormData) {
     'use server';
     const id = formData.get('id') as string;
     const title = formData.get('title') as string;
     const description = formData.get('description') as string;
-    const categoryId = formData.get('categoryId') as string;
-    if (!id || !title || !description || !categoryId) return;
-    await createRoadmap({ id, title, description, categoryId });
+    if (!id || !title || !description) return;
+    await createDsaSheet({ id, title, description });
   }
 
   async function handleDelete(formData: FormData) {
     'use server';
     const id = formData.get('id') as string;
     if (!id) return;
-    await deleteRoadmap(id);
+    await deleteDsaSheet(id);
   }
 
   return (
     <div>
-      <h1 className="text-3xl font-display uppercase tracking-tight mb-8">Roadmap Management</h1>
+      <h1 className="text-3xl font-display uppercase tracking-tight mb-8">DSA Management</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
@@ -46,12 +45,12 @@ export default async function AdminRoadmapsPage() {
                 </tr>
               </thead>
               <tbody>
-                {allRoadmaps.length === 0 && (
+                {allSheets.length === 0 && (
                   <tr>
-                    <td colSpan={3} className="px-6 py-8 text-center text-text-muted">No roadmaps found.</td>
+                    <td colSpan={3} className="px-6 py-8 text-center text-text-muted">No DSA Sheets found.</td>
                   </tr>
                 )}
-                {allRoadmaps.map((r) => (
+                {allSheets.map((r) => (
                   <tr key={r.id} className="border-b border-border-main last:border-0 hover:bg-bg-main/50 transition-colors">
                     <td className="px-6 py-4">{r.id}</td>
                     <td className="px-6 py-4 font-bold text-text-primary">{r.title}</td>
@@ -73,26 +72,22 @@ export default async function AdminRoadmapsPage() {
         <div className="lg:col-span-1">
           <div className="border border-border-main bg-bg-sec p-6">
             <h2 className="text-xl font-display uppercase mb-4 flex items-center gap-2">
-              <Plus size={18} /> Create Roadmap
+              <Plus size={18} /> Create Sheet
             </h2>
             <form action={handleCreate} className="space-y-4">
               <div>
                 <label className="block text-xs font-mono text-text-muted mb-1 uppercase">ID</label>
-                <input type="text" name="id" required className="w-full bg-bg-main border border-border-main p-2 text-sm focus:border-accent outline-none" placeholder="e.g. react-101" />
+                <input type="text" name="id" required className="w-full bg-bg-main border border-border-main p-2 text-sm focus:border-accent outline-none" placeholder="e.g. blind-75" />
               </div>
               <div>
                 <label className="block text-xs font-mono text-text-muted mb-1 uppercase">Title</label>
-                <input type="text" name="title" required className="w-full bg-bg-main border border-border-main p-2 text-sm focus:border-accent outline-none" placeholder="e.g. React 101" />
-              </div>
-              <div>
-                <label className="block text-xs font-mono text-text-muted mb-1 uppercase">Category ID</label>
-                <input type="text" name="categoryId" required className="w-full bg-bg-main border border-border-main p-2 text-sm focus:border-accent outline-none" placeholder="e.g. frontend" />
+                <input type="text" name="title" required className="w-full bg-bg-main border border-border-main p-2 text-sm focus:border-accent outline-none" placeholder="e.g. Blind 75" />
               </div>
               <div>
                 <label className="block text-xs font-mono text-text-muted mb-1 uppercase">Description</label>
                 <textarea name="description" required rows={3} className="w-full bg-bg-main border border-border-main p-2 text-sm focus:border-accent outline-none" placeholder="Description here..."></textarea>
               </div>
-              <button type="submit" className="w-full bg-accent text-bg-main py-2 font-mono uppercase text-sm hover:bg-accent/90 transition-colors">Create Roadmap</button>
+              <button type="submit" className="w-full bg-accent text-bg-main py-2 font-mono uppercase text-sm hover:bg-accent/90 transition-colors">Create Sheet</button>
             </form>
           </div>
         </div>

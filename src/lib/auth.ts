@@ -55,8 +55,15 @@ export async function validateSession() {
   if (!userList[0]) return null;
   
   const profileList = await db.select().from(profiles).where(eq(profiles.id, session.userId));
+  const profile = profileList[0] || null;
 
-  return { session, user: userList[0], profile: profileList[0] || null };
+  // If suspended, invalidate session
+  if (profile?.isSuspended) {
+    await db.delete(sessions).where(eq(sessions.id, sessionId));
+    return null;
+  }
+
+  return { session, user: userList[0], profile };
 }
 
 export async function invalidateSession() {

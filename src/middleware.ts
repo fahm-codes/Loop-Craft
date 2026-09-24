@@ -33,12 +33,21 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(url);
       }
       
+      // Fetch role and suspended status
+      const profileRecords = await sql`
+        SELECT role, is_suspended FROM profiles WHERE id = ${session.user_id}
+      `;
+      const profile = profileRecords[0];
+
+      if (!profile || profile.is_suspended) {
+        url.pathname = '/login';
+        url.searchParams.set('next', request.nextUrl.pathname);
+        return NextResponse.redirect(url);
+      }
+      
       if (url.pathname.startsWith('/admin')) {
-        const profileRecords = await sql`
-          SELECT role FROM profiles WHERE id = ${session.user_id}
-        `;
-        const role = profileRecords[0]?.role;
-        if (!role || !['SUPER_ADMIN', 'ADMIN', 'CONTENT_MANAGER', 'MODERATOR', 'SUPPORT'].includes(role)) {
+        const role = profile.role;
+        if (!['SUPER_ADMIN', 'ADMIN', 'CONTENT_MANAGER', 'MODERATOR', 'SUPPORT'].includes(role)) {
           url.pathname = '/unauthorized';
           return NextResponse.redirect(url);
         }
