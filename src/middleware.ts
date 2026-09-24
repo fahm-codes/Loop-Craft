@@ -1,19 +1,62 @@
-import { type NextRequest } from 'next/server'
-import { updateSession } from '@/utils/supabase/middleware'
+import { NextResponse, type NextRequest } from 'next/server'
+import { neon } from '@neondatabase/serverless'
 
 export async function middleware(request: NextRequest) {
-  return await updateSession(request)
+  const url = request.nextUrl.clone();
+  
+  if (url.pathname.startsWith('/admin') || url.pathname.startsWith('/profile')) {
+    const sessionId = request.cookies.get('session')?.value;
+    
+    if (!sessionId) {
+      url.pathname = '/login';
+      url.searchParams.set('next', request.nextUrl.pathname);
+      return NextResponse.redirect(url);
+    }
+    
+    try {
+      const sql = neon(process.env.DATABASE_URL!);
+      
+      const sessionRecords = await sql`
+        SELECT user_id, expires_at FROM sessions WHERE id = ${sessionId}
+      `;
+      
+      if (sessionRecords.length === 0) {
+        url.pathname = '/login';
+        url.searchParams.set('next', request.nextUrl.pathname);
+        return NextResponse.redirect(url);
+      }
+      
+      const session = sessionRecords[0];
+      if (new Date(session.expires_at).getTime() < Date.now()) {
+        url.pathname = '/login';
+        url.searchParams.set('next', request.nextUrl.pathname);
+        return NextResponse.redirect(url);
+      }
+      
+      if (url.pathname.startsWith('/admin')) {
+        const profileRecords = await sql`
+          SELECT role FROM profiles WHERE id = ${session.user_id}
+        `;
+        const role = profileRecords[0]?.role;
+        if (!role || !['SUPER_ADMIN', 'ADMIN', 'CONTENT_MANAGER', 'MODERATOR', 'SUPPORT'].includes(role)) {
+          url.pathname = '/unauthorized';
+          return NextResponse.redirect(url);
+        }
+      }
+    } catch (e) {
+      console.error('Middleware auth check error:', e);
+      if (url.pathname.startsWith('/admin')) {
+         url.pathname = '/login';
+         return NextResponse.redirect(url);
+      }
+    }
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

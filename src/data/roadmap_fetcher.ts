@@ -1,55 +1,50 @@
 import { getRoadmapById as getStaticRoadmapById } from './roadmap';
-import { createClient } from '@/utils/supabase/server';
+import { db } from '@/db';
+import { roadmaps, roadmapNodes, roadmapTopics, resources } from '@/db/schema';
+import { eq, asc } from 'drizzle-orm';
 
 export async function fetchRoadmapById(id: string) {
   try {
-    const supabase = await createClient();
-    
-    // Attempt to fetch from DB
-    const { data: roadmap, error } = await supabase
-      .from('roadmaps')
-      .select(`
-        *,
-        nodes:roadmap_nodes (
-          *,
-          topics:roadmap_topics(*),
-          resources(*)
-        )
-      `)
-      .eq('id', id)
-      .single();
+    const roadmapList = await db.select().from(roadmaps).where(eq(roadmaps.id, id));
+    const roadmap = roadmapList[0];
 
-    if (!error && roadmap) {
-      // Sort and shape the data to match the static interface
-      const shapedRoadmap = {
+    if (roadmap) {
+      const nodes = await db.select().from(roadmapNodes).where(eq(roadmapNodes.roadmapId, id)).orderBy(asc(roadmapNodes.orderIndex));
+      
+      const nodesWithRelations = await Promise.all(nodes.map(async (node) => {
+        const topics = await db.select().from(roadmapTopics).where(eq(roadmapTopics.nodeId, node.id)).orderBy(asc(roadmapTopics.orderIndex));
+        const res = await db.select().from(resources).where(eq(resources.nodeId, node.id)).orderBy(asc(resources.orderIndex));
+        
+        return {
+          id: node.id,
+          title: node.title,
+          description: node.description,
+          duration: node.duration,
+          orderIndex: node.orderIndex,
+          topics: topics.map(t => t.topic),
+          resources: res.map(r => ({
+            id: r.id,
+            type: r.type,
+            title: r.title,
+            url: r.url,
+            content: r.content
+          }))
+        };
+      }));
+
+      return {
         id: roadmap.id,
         title: roadmap.title,
         description: roadmap.description,
-        difficulty: roadmap.difficulty,
-        estimatedDuration: roadmap.estimated_duration,
-        nodes: roadmap.nodes
-          .sort((a: any, b: any) => a.order_index - b.order_index)
-          .map((node: any) => ({
-            id: node.id,
-            title: node.title,
-            description: node.description,
-            duration: node.duration,
-            topics: (node.topics || []).sort((a: any, b: any) => a.order_index - b.order_index).map((t: any) => t.topic),
-            resources: (node.resources || []).sort((a: any, b: any) => a.order_index - b.order_index).map((r: any) => ({
-              id: r.id,
-              type: r.type,
-              title: r.title,
-              url: r.url,
-              content: r.content
-            }))
-          }))
+        difficulty: roadmap.difficulty || undefined,
+        estimatedDuration: roadmap.estimatedDuration || undefined,
+        nodes: nodesWithRelations as any
       };
-      return shapedRoadmap;
     }
   } catch (err) {
-    console.warn("Supabase fetch failed, falling back to static data", err);
+    console.warn("DB fetch failed, falling back to static data", err);
   }
 
-  // Fallback to static
-  return getStaticRoadmapById(id);
+  // Fallback to static data
+  return getStaticRoadmapById(id) || null;
 }

@@ -1,29 +1,28 @@
-import { createClient } from '@/utils/supabase/server';
 import { Users, Map, BookOpen, PenTool } from 'lucide-react';
+import { db } from '@/db';
+import { profiles, roadmaps, roadmapNodes, assignmentSubmissions } from '@/db/schema';
+import { count } from 'drizzle-orm';
 
 export default async function AdminDashboard() {
-  const supabase = await createClient();
-
-  // Fetch real counts safely, if tables exist
   let userCount = 'Unavailable';
   let roadmapCount = 'Unavailable';
   let lessonCount = 'Unavailable';
   let submissionCount = 'Unavailable';
 
   try {
-    const { count: uCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
-    if (uCount !== null) userCount = uCount.toString();
+    const profileCountResult = await db.select({ count: count() }).from(profiles);
+    userCount = profileCountResult[0].count.toString();
 
-    const { count: rCount } = await supabase.from('roadmaps').select('*', { count: 'exact', head: true });
-    if (rCount !== null) roadmapCount = rCount.toString();
+    const roadmapCountResult = await db.select({ count: count() }).from(roadmaps);
+    roadmapCount = roadmapCountResult[0].count.toString();
 
-    const { count: lCount } = await supabase.from('roadmap_nodes').select('*', { count: 'exact', head: true });
-    if (lCount !== null) lessonCount = lCount.toString();
+    const lessonCountResult = await db.select({ count: count() }).from(roadmapNodes);
+    lessonCount = lessonCountResult[0].count.toString();
 
-    const { count: sCount } = await supabase.from('assignment_submissions').select('*', { count: 'exact', head: true });
-    if (sCount !== null) submissionCount = sCount.toString();
+    const submissionCountResult = await db.select({ count: count() }).from(assignmentSubmissions);
+    submissionCount = submissionCountResult[0].count.toString();
   } catch (err) {
-    // DB not fully seeded yet, that's fine
+    console.error("Dashboard count error:", err);
   }
 
   const stats = [

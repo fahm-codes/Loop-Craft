@@ -1,20 +1,15 @@
 import { redirect } from 'next/navigation';
-import { createClient } from '@/utils/supabase/server';
+import { validateSession } from '@/lib/auth';
 import AdminSidebar from './AdminSidebar';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const sessionData = await validateSession();
 
-  if (!user) {
+  if (!sessionData || !sessionData.user) {
     redirect('/login?next=/admin');
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
+  const profile = sessionData.profile;
 
   if (!profile || !['SUPER_ADMIN', 'ADMIN', 'CONTENT_MANAGER', 'MODERATOR', 'SUPPORT'].includes(profile.role)) {
     redirect('/unauthorized');

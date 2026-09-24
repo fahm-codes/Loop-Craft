@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { VT323, JetBrains_Mono, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import { createClient } from "@/utils/supabase/server";
-
 import AppLayout from "@/components/AppLayout";
 
 const display = VT323({
@@ -57,16 +55,14 @@ export default async function RootLayout({
   let profile = null;
 
   try {
-    const supabase = await createClient();
-    const { data } = await supabase.auth.getUser();
-    user = data.user;
-
-    if (user) {
-      const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-      profile = profileData;
+    const { validateSession } = await import('@/lib/auth');
+    const sessionData = await validateSession();
+    if (sessionData && sessionData.user) {
+      user = sessionData.user;
+      profile = sessionData.profile;
     }
   } catch (error) {
-    console.error('Supabase initialization or fetch failed. Check your environment variables.');
+    console.error('Session validation failed.');
   }
 
   return (

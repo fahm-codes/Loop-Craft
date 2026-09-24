@@ -1,18 +1,29 @@
-import { createClient } from '@/utils/supabase/server';
 import { Search, ShieldAlert, Edit2 } from 'lucide-react';
 import Link from 'next/link';
+import { db } from '@/db';
+import { profiles } from '@/db/schema';
+import { desc, like, or } from 'drizzle-orm';
 
 export default async function AdminUsersPage({ searchParams }: { searchParams: { q?: string } }) {
-  const supabase = await createClient();
   const { q } = await searchParams;
 
-  let query = supabase.from('profiles').select('*').order('created_at', { ascending: false });
-  
-  if (q) {
-    query = query.or(`email.ilike.%\${q}%,full_name.ilike.%\${q}%`);
-  }
+  let users: any[] = [];
+  let error: string | null = null;
 
-  const { data: users, error } = await query.limit(50);
+  try {
+    let query = db.select().from(profiles);
+    
+    if (q) {
+      query = query.where(or(
+        like(profiles.email, `%${q}%`),
+        like(profiles.fullName, `%${q}%`)
+      )) as any;
+    }
+    
+    users = await query.orderBy(desc(profiles.createdAt)).limit(50);
+  } catch (err: any) {
+    error = err.message || "Failed to load users";
+  }
 
   return (
     <div>
@@ -34,7 +45,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
       {error ? (
         <div className="bg-red-500/10 border border-red-500/30 p-4 text-red-400 font-mono text-sm flex items-center gap-3">
           <ShieldAlert size={18} />
-          Failed to load users: {error.message}
+          Failed to load users: {error}
         </div>
       ) : (
         <div className="border border-border-main bg-bg-sec overflow-x-auto">
@@ -56,11 +67,11 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
               {users?.map((u) => (
                 <tr key={u.id} className="border-b border-border-main last:border-0 hover:bg-bg-main/50 transition-colors">
                   <td className="px-6 py-4">
-                    <div className="text-text-primary font-bold">{u.full_name || 'Unknown'}</div>
+                    <div className="text-text-primary font-bold">{u.fullName || 'Unknown'}</div>
                     <div className="text-text-muted text-xs">{u.email}</div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded-sm text-xs border \${
+                    <span className={`px-2 py-1 rounded-sm text-xs border ${
                       u.role === 'SUPER_ADMIN' ? 'bg-red-500/10 border-red-500/30 text-red-400' :
                       u.role === 'ADMIN' ? 'bg-orange-500/10 border-orange-500/30 text-orange-400' :
                       u.role === 'CONTENT_MANAGER' ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' :
@@ -70,7 +81,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-text-secondary">
-                    {new Date(u.created_at).toLocaleDateString()}
+                    {new Date(u.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <Link href={`/admin/users/\${u.id}`} className="text-accent hover:underline flex items-center justify-end gap-2">

@@ -1,15 +1,14 @@
-import { createClient } from '@/utils/supabase/server';
 import { Plus, Edit2, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { getAllRoadmaps } from '@/data/roadmap';
+import { db } from '@/db';
+import { roadmaps as roadmapsTable } from '@/db/schema';
+import { desc } from 'drizzle-orm';
 
 export default async function AdminRoadmapsPage() {
-  const supabase = await createClient();
-  
-  // Try fetching dynamic roadmaps, fallback to static if DB fails
   let roadmaps: any[] = [];
   try {
-    const { data } = await supabase.from('roadmaps').select('*').order('created_at', { ascending: false });
+    const data = await db.select().from(roadmapsTable).orderBy(desc(roadmapsTable.createdAt));
     if (data && data.length > 0) {
       roadmaps = data;
     } else {
@@ -32,7 +31,7 @@ export default async function AdminRoadmapsPage() {
         {roadmaps.map((r) => (
           <div key={r.id} className="border border-border-main bg-bg-sec p-6 flex flex-col group hover:border-accent transition-colors">
             <div className="flex justify-between items-start mb-4">
-              <span className={`font-mono text-xs px-2 py-1 uppercase \${r.status === 'PUBLISHED' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'}`}>
+              <span className={`font-mono text-xs px-2 py-1 uppercase ${(r.status === 'PUBLISHED' || r.status === 'published') ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'}`}>
                 {r.status || 'STATIC_FALLBACK'}
               </span>
               <button className="text-text-muted hover:text-accent transition-colors">

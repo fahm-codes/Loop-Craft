@@ -1,23 +1,16 @@
-import { createClient } from '@/utils/supabase/server'
+import { validateSession } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { logout } from '@/app/actions/auth'
 import { User, LogOut, Settings, Award } from 'lucide-react'
 
 export default async function ProfilePage() {
-  const supabase = await createClient()
-  
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const sessionData = await validateSession();
 
-  if (authError || !user) {
+  if (!sessionData || !sessionData.user) {
     redirect('/login')
   }
 
-  // Fetch the profile
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
+  const { user, profile } = sessionData;
 
   return (
     <main className="flex-grow w-full max-w-4xl mx-auto px-6 py-12">
@@ -30,18 +23,14 @@ export default async function ProfilePage() {
         {/* Sidebar */}
         <div className="md:col-span-1 space-y-4">
           <div className="bg-bg-sec border border-border-main p-6 rounded-md flex flex-col items-center text-center">
-            {profile?.avatar_url ? (
-              <img src={profile.avatar_url} alt="Avatar" className="w-24 h-24 rounded-full mb-4 border-2 border-accent object-cover" />
-            ) : (
-              <div className="w-24 h-24 rounded-full mb-4 border-2 border-accent bg-bg-main flex items-center justify-center">
-                <User size={40} className="text-accent" />
-              </div>
-            )}
+            <div className="w-24 h-24 rounded-full mb-4 border-2 border-accent bg-bg-main flex items-center justify-center">
+              <User size={40} className="text-accent" />
+            </div>
             
-            <h2 className="text-xl font-bold text-text-primary mb-1">{profile?.display_name || user.email}</h2>
-            <p className="text-text-muted font-mono text-xs mb-4">@{profile?.username || 'user'}</p>
+            <h2 className="text-xl font-bold text-text-primary mb-1">{profile?.fullName || user.email}</h2>
+            <p className="text-text-muted font-mono text-xs mb-4">{user.email}</p>
             <span className="bg-bg-main border border-border-main text-text-secondary px-3 py-1 rounded-full text-xs font-mono">
-              Student
+              {profile?.role || 'LEARNER'}
             </span>
           </div>
 
@@ -77,23 +66,16 @@ export default async function ProfilePage() {
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-text-muted mb-2 uppercase tracking-wider">Display Name</label>
+                <label className="block text-xs font-mono text-text-muted mb-2 uppercase tracking-wider">Full Name</label>
                 <div className="text-text-primary font-mono text-sm bg-bg-main border border-border-main p-3 rounded-md">
-                  {profile?.display_name || 'Not set'}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-mono text-text-muted mb-2 uppercase tracking-wider">Username</label>
-                <div className="text-text-primary font-mono text-sm bg-bg-main border border-border-main p-3 rounded-md">
-                  @{profile?.username}
+                  {profile?.fullName || 'Not set'}
                 </div>
               </div>
               
               <div>
                 <label className="block text-xs font-mono text-text-muted mb-2 uppercase tracking-wider">Account Created</label>
                 <div className="text-text-primary font-mono text-sm bg-bg-main border border-border-main p-3 rounded-md">
-                  {new Date(user.created_at).toLocaleDateString('en-US', {
+                  {new Date(user.createdAt).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'

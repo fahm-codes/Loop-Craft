@@ -70,6 +70,12 @@ export const profiles = pgTable('profiles', {
   updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow().notNull(),
 });
 
+export const rateLimits = pgTable('rate_limits', {
+  key: text('key').primaryKey(),
+  points: integer('points').notNull().default(0),
+  expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
+});
+
 // 2. Curriculum Tables
 export const roadmaps = pgTable('roadmaps', {
   id: text('id').primaryKey(),
