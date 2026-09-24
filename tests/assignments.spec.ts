@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Practice & Assignments Submission', () => {
   const ROADMAP_URL = '/roadmap/ai-engineering/learn';
-  // This title comes from the live Supabase seed (week-1, type=assignment, order_index=5)
+  // This title comes from the live Neon seed (week-1, type=assignment, order_index=5)
   const ASSIGNMENT_TITLE = 'Track A: Finish all these exercises';
 
   // Wait for LearnView to hydrate and render content.

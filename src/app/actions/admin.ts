@@ -10,6 +10,14 @@ function hasAdminAccess(role: string) {
   return ['SUPER_ADMIN', 'ADMIN'].includes(role);
 }
 
+function hasModeratorAccess(role: string) {
+  return ['SUPER_ADMIN', 'ADMIN', 'MODERATOR'].includes(role);
+}
+
+function hasContentAccess(role: string) {
+  return ['SUPER_ADMIN', 'ADMIN', 'CONTENT_MANAGER'].includes(role);
+}
+
 export async function updateUserRole(userId: string, newRole: string) {
   const sessionData = await validateSession();
   if (!sessionData || !hasAdminAccess(sessionData.profile.role)) {
@@ -32,7 +40,7 @@ export async function updateUserRole(userId: string, newRole: string) {
 
 export async function toggleUserSuspension(userId: string, suspend: boolean) {
   const sessionData = await validateSession();
-  if (!sessionData || !hasAdminAccess(sessionData.profile.role)) {
+  if (!sessionData || !hasModeratorAccess(sessionData.profile.role)) {
     throw new Error('Unauthorized');
   }
 
@@ -71,7 +79,7 @@ export async function deleteUser(userId: string) {
 
 export async function createRoadmap(data: { id: string, title: string, description: string, categoryId: string }) {
   const sessionData = await validateSession();
-  if (!sessionData || !hasAdminAccess(sessionData.profile.role)) throw new Error('Unauthorized');
+  if (!sessionData || !hasContentAccess(sessionData.profile.role)) throw new Error('Unauthorized');
 
   await db.insert(roadmaps).values({
     id: data.id,
@@ -85,7 +93,7 @@ export async function createRoadmap(data: { id: string, title: string, descripti
 
 export async function deleteRoadmap(id: string) {
   const sessionData = await validateSession();
-  if (!sessionData || !hasAdminAccess(sessionData.profile.role)) throw new Error('Unauthorized');
+  if (!sessionData || !hasContentAccess(sessionData.profile.role)) throw new Error('Unauthorized');
 
   await db.delete(roadmaps).where(eq(roadmaps.id, id));
   revalidatePath('/admin/roadmaps');
@@ -93,7 +101,7 @@ export async function deleteRoadmap(id: string) {
 
 export async function createDsaSheet(data: { id: string, title: string, description: string }) {
   const sessionData = await validateSession();
-  if (!sessionData || !hasAdminAccess(sessionData.profile.role)) throw new Error('Unauthorized');
+  if (!sessionData || !hasContentAccess(sessionData.profile.role)) throw new Error('Unauthorized');
 
   await db.insert(dsaSheets).values({
     id: data.id,
@@ -105,7 +113,7 @@ export async function createDsaSheet(data: { id: string, title: string, descript
 
 export async function deleteDsaSheet(id: string) {
   const sessionData = await validateSession();
-  if (!sessionData || !hasAdminAccess(sessionData.profile.role)) throw new Error('Unauthorized');
+  if (!sessionData || !hasContentAccess(sessionData.profile.role)) throw new Error('Unauthorized');
 
   await db.delete(dsaSheets).where(eq(dsaSheets.id, id));
   revalidatePath('/admin/dsa');

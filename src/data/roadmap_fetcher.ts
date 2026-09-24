@@ -1,4 +1,3 @@
-import { getRoadmapById as getStaticRoadmapById } from './roadmap';
 import { db } from '@/db';
 import { roadmaps, roadmapNodes, roadmapTopics, resources } from '@/db/schema';
 import { eq, asc } from 'drizzle-orm';
@@ -42,9 +41,8 @@ export async function fetchRoadmapById(id: string) {
       };
     }
   } catch (err) {
-    console.warn("DB fetch failed, falling back to static data", err);
+    console.warn("DB fetch failed", err);
   }
 
-  // Fallback to static data
-  return getStaticRoadmapById(id) || null;
+  return null;
 }

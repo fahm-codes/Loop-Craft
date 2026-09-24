@@ -23,7 +23,7 @@ test.describe('Smoke Tests & Responsiveness', () => {
           const text = msg.text();
           // Ignore known harmless noise like missing favicon or specific hydration warnings 
           // (if any, though we aim for 0)
-          if (!text.includes('favicon.ico') && !text.includes('Supabase initialization') && !text.includes('WebSocket')) {
+          if (!text.includes('favicon.ico') && !text.includes('WebSocket')) {
             errors.push(text);
           }
         }
