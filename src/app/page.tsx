@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import AIRoadmapGenerator from '@/components/AIRoadmapGenerator';
 import { 
   BookOpen, Code2, FileText, Repeat, Star, 
   GraduationCap, Briefcase, Code, Rocket, Shield,
@@ -174,6 +175,9 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* 4. AI ROADMAP GENERATOR */}
+        <AIRoadmapGenerator />
 
         {/* 4. ROADMAP GUIDE & AI TUTOR */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
